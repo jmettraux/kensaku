@@ -1,4 +1,15 @@
 
-%div
-  nada
+%div.search
+  %input#query{ :type => :text }
+  %input#go{ :type => :submit, :value => 'x' }
+%div.results
+
+:javascript
+
+  Caboche.last(function() {
+
+    $('#query').on('keyup', function(ev) {
+      console.log($(ev.target).val());
+    });
+  });
 

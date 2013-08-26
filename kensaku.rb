@@ -13,6 +13,12 @@ configure do
   set :scss, Compass.sass_engine_options
 end
 
+use(
+  Rack::Static,
+  :urls => %w[ /images /js ],
+  :root => File.join(File.dirname(__FILE__), 'static'))
+#use(Rack::MethodOverride)
+
 get '/style.css' do
 
   scss :style
