@@ -17,6 +17,9 @@ bundle exec ruby server.rb
 * http://www.csse.monash.edu.au/~jwb/edict_doc.html
 * http://www.csse.monash.edu.au/~jwb/
 * http://en.wikipedia.org/wiki/Network_Kanji_Filter
+* sinatra, thin
+* haml, sass, compass
+* [mojinizer](https://github.com/ikayzo/mojinizer) and [moji](https://github.com/gimite/moji)
 
 
 ## license

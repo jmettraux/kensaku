@@ -11,6 +11,9 @@ GEM
     fssm (0.2.10)
     haml (4.0.3)
       tilt
+    moji (1.6)
+    mojinizer (0.2.2)
+      moji (~> 1.6)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -31,5 +34,6 @@ PLATFORMS
 DEPENDENCIES
   compass
   haml
+  mojinizer
   sinatra
   thin
