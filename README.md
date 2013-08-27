@@ -1,7 +1,15 @@
 
 # kensaku
 
-My personal language study dictionary.
+My personal language study dictionary, as an iPhone oriented web application.
+
+
+## usage
+
+To start the web application:
+```
+bundle exec ruby server.rb
+```
 
 
 ## links
