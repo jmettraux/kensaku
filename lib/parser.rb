@@ -70,6 +70,7 @@ class Entry
   end
 end
 
+t = Time.now
 count = 0
 while true
   line = STDIN.readline rescue nil
@@ -77,4 +78,9 @@ while true
   e = Entry.new(count, line)
   count += 1
 end
+d = Time.now - t
+
+puts "done, #{count} entries, took #{d} seconds."
+  #
+  # done, 167060 entries, took 56.486152348 seconds
 
