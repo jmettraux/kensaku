@@ -17,6 +17,7 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
+    rufus-json (1.0.5)
     sass (3.2.10)
     sinatra (1.4.3)
       rack (~> 1.4)
@@ -27,6 +28,7 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.4.1)
+    yajl-ruby (1.1.0)
 
 PLATFORMS
   ruby
@@ -35,5 +37,7 @@ DEPENDENCIES
   compass
   haml
   mojinizer
+  rufus-json
   sinatra
   thin
+  yajl-ruby

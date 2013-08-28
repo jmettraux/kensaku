@@ -15,7 +15,7 @@ end
 
 use(
   Rack::Static,
-  :urls => %w[ /images /js ],
+  :urls => %w[ /images /js /entries ],
   :root => File.join(File.dirname(__FILE__), 'static'))
 #use(Rack::MethodOverride)
 
