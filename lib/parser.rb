@@ -76,6 +76,33 @@ class Entry
 end
 
 
+def self_ps
+  # pid stat time sl re pagein vsz rss lim tsiz pcpu pmem command
+  cols = %w[ vsz rss lim tsiz pcpu pmem ]
+  ps = `ps -o #{cols.join(',')} #{$$}`.split("\n").last.split(' ')
+  cols.inject({}) { |h, k| h[k.intern] = ps.shift; h }
+end
+def pmem(msg)
+  ps = self_ps
+  p [ msg, "#{ps[:vsz].to_i / 1024}k", ps[:pmem] ]
+end
+pmem 'starting'
+
+
+t = Time.now
+a = []
+while true
+  line = STDIN.readline rescue nil
+  break unless line
+  a << Entry.new(a.size, line)
+end
+d = Time.now - t
+
+puts "done, #{a.size} entries, took #{d} seconds."
+pmem 'over.'
+exit 0
+
+
 depth = 4
 maxlines = 35
 
