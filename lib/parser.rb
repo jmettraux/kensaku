@@ -27,22 +27,23 @@
 require 'pp'
 #require 'rufus-json/automatic'
 require 'mojinizer'
+require_relative 'mem'
 
 
 class Entry
 
-  attr_reader :id, :kanji, :kana, :romaji, :split_romaji, :glosses
+  attr_reader :line, :kanji, :kana, :romaji, :split_romaji, :glosses
 
   R = /^([^;\s]+)(?:;([^:\s]+))* (?:\[([^;\s]+)(?:;([^:\s]+))*\] )?\/(.+)\/$/
   ENTL = /^EntL\d+X?$/
 
   PREX = %w[ ki shi chi ni hi mi ri gi ji bi pi te de u vu ]
 
-  def initialize(id, line)
+  def initialize(line, s)
 
-    @id = id
+    @line = line
 
-    m = R.match(line)
+    m = R.match(s)
 
     @kanji = [ m[1], *(m[2] ? m[2].split(';') : []) ]
 
@@ -61,11 +62,11 @@ class Entry
   def to_h
 
     {
-      'id' => id,
+      'li' => line,
       'ki' => kanji,
       'ka' => kana,
       'ro' => romaji,
-      'sr' => split_romaji,
+      #'sr' => split_romaji,
       'gs' => glosses
     }
   end
@@ -99,16 +100,45 @@ class Entry
   end
 end
 
+pmem 'start'
 
 t = Time.now
-i = 0
-while true
-  line = STDIN.readline rescue nil
-  break unless line
-  e = Entry.new(i, line)
-  i = i + 1
+roots = {}
+count = 0
+
+File.readlines('data/edict2.txt').each_with_index do |s, i|
+
+  e = Entry.new(i + 1, s)
+
+  e.split_romaji.each do |sr|
+    s = sr.shift
+    loop do
+      #p s
+      (roots[s] ||= []) << e
+      n = sr.shift
+      break unless n
+      s = s + n
+    end
+  end
+
+  count = i + 1
 end
+
+roots.values.each do |a|
+
+  a.sort_by! { |e| e.romaji.first }
+end
+
 d = Time.now - t
 
-puts "done, #{i} entries, took #{d} seconds."
+puts "done, #{count} entries, took #{d} seconds."
+
+p roots.keys.size
+pp roots['a'].take(20).collect { |e| e.romaji }
+#pp roots['aa'].take(20).collect { |e| e.romaji }
+#roots.keys.sort.each do |k|
+#  print "#{k}: #{roots[k].size}, "
+#end
+
+pmem 'end'
 
