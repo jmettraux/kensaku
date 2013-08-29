@@ -1,7 +1,31 @@
 # encoding: utf-8
 
+#--
+# Copyright (c) 2013-2013, John Mettraux, jmettraux@gmail.com
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+# Made in Japan.
+#++
+
 require 'pp'
-require 'rufus-json/automatic'
+#require 'rufus-json/automatic'
 require 'mojinizer'
 
 
@@ -76,74 +100,15 @@ class Entry
 end
 
 
-def self_ps
-  # pid stat time sl re pagein vsz rss lim tsiz pcpu pmem command
-  cols = %w[ vsz rss lim tsiz pcpu pmem ]
-  ps = `ps -o #{cols.join(',')} #{$$}`.split("\n").last.split(' ')
-  cols.inject({}) { |h, k| h[k.intern] = ps.shift; h }
-end
-def pmem(msg)
-  ps = self_ps
-  p [ msg, "#{ps[:vsz].to_i / 1024}k", ps[:pmem] ]
-end
-pmem 'starting'
-
-
 t = Time.now
-a = []
+i = 0
 while true
   line = STDIN.readline rescue nil
   break unless line
-  a << Entry.new(a.size, line)
+  e = Entry.new(i, line)
+  i = i + 1
 end
 d = Time.now - t
 
-puts "done, #{a.size} entries, took #{d} seconds."
-pmem 'over.'
-exit 0
-
-
-depth = 4
-maxlines = 35
-
-t = Time.now
-count = 0
-while true
-  line = STDIN.readline rescue nil
-  break unless line
-  e = Entry.new(count, line)
-  count += 1
-
-  next if e.split_romaji.size < 1
-
-  e.split_romaji.each do |sr|
-
-    (1..depth).each do |l|
-
-      break if l > sr.length
-
-      #p sr[0, l]
-
-      prefix = sr[0, l].join
-      fname = "entries/#{prefix}.json"
-
-      lines = File.exist?(fname) ? File.readlines(fname).size : 0
-      puts "#{count} #{fname}: #{lines}" if lines > 0
-
-      next if l < sr.length && l < depth && lines >= maxlines
-
-      if fname.index('x') # remove me at some point...
-        pp e.to_h
-        raise "found 'x' in '#{fname}'"
-      end
-
-      File.open(fname, 'ab') { |f| f.puts(Rufus::Json.dump(e.to_h)) }
-    end
-  end
-end
-d = Time.now - t
-
-puts "done, #{count} entries, took #{d} seconds."
-  #
-  # done, 167060 entries, took 56.486152348 seconds (just reading)
+puts "done, #{i} entries, took #{d} seconds."
 
