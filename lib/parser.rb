@@ -29,54 +29,9 @@ class Entry
     syls = syls.collect { |s| s.split('(').first }.uniq
 
     @romaji = syls.collect(&:romaji)
-
-    @split_romaji = syls.collect { |k| k.chars.collect(&:romaji) }
-    @split_romaji = @split_romaji.collect { |s| compact_romaji(s) }
+    @split_romaji = @romaji.collect { |r| split(r) }
 
     @glosses = m[5].split('/').reject { |g| ENTL.match(g) }
-  end
-
-  def merge_romaji(syl0, syl1)
-
-    if syl0 == 'ji' || syl0 == 'chi' || syl0 == 'shi'
-      syl0.chars.first + syl1.chars.to_a.last
-    elsif syl0 == 'u'
-      'v' + syl1.chars.to_a.last
-    else
-      syl0.chars.first + syl1.chars.to_a[1..-1].join
-    end
-  end
-
-  def compact_romaji(syllables)
-
-    a = []
-
-    while syllables.length > 0
-
-      syl = syllables.shift
-      nsyl = syllables.first
-
-      if syl == 'h!'
-        if nsyl
-          a << nsyl.chars.first
-        else
-          a << 'tsu'
-        end
-      elsif nsyl && PREX.index(syl)
-        if nsyl.chars.first == 'x'
-          syllables.shift
-          a << merge_romaji(syl, nsyl)
-        else
-          a << syl
-        end
-      elsif syl.chars.first == 'x' # a ga a na (Hiroshima dialect)
-        a << syl.chars.to_a[1..-1].join
-      else
-        a << syl
-      end
-    end
-
-    a
   end
 
   def to_h
@@ -90,7 +45,36 @@ class Entry
       'gs' => glosses
     }
   end
+
+  protected
+
+  VOWELS = %w[ a e i o u ]
+
+  def split(s)
+
+    a = []
+    cs = s.chars.to_a
+
+    loop do
+      c = cs.shift
+      nc = cs.first
+      break unless c
+      if VOWELS.include?(c)
+        a << c
+      elsif VOWELS.include?(nc)
+        cs.shift
+        a << c + nc
+      elsif c == nc || c == 'n'
+        a << c
+      else
+        a << c + (cs.shift || '') + (cs.shift || '')
+      end
+    end
+
+    a
+  end
 end
+
 
 depth = 4
 maxlines = 35
