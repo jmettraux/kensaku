@@ -44,12 +44,12 @@ class Entry
     m = R.match(s)
 
     @kanji = [ m[1], *(m[2] ? m[2].split(';') : []) ]
+    @kanji = @kanji.collect { |k| k.split('(').first }
 
     @kana = [ m[3], *(m[4] ? m[4].split(';') : []) ].compact
+    @kana = @kana.collect { |k| k.split('(').first }
 
     syls = @kana.empty? ? kanji : kana
-    syls = syls.collect { |s| s.split('(').first }.uniq
-    syls = syls.select(&:kana?)
 
     @romaji = syls.collect(&:romaji)
     @split_romaji = @romaji.collect { |r| split(r) }
