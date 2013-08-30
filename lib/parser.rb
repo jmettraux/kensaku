@@ -48,13 +48,13 @@ class Entry
     @kana = [ m[3], *(m[4] ? m[4].split(';') : []) ].compact
 
     syls = @kana.empty? ? kanji : kana
-    syls = syls.select(&:kana?)
     syls = syls.collect { |s| s.split('(').first }.uniq
+    syls = syls.select(&:kana?)
 
     @romaji = syls.collect(&:romaji)
     @split_romaji = @romaji.collect { |r| split(r) }
 
-    @glosses = m[5].split('/').reject { |g| ENTL.match(g) }
+    @glosses = m[5].split('/').reject { |g| g == '(P)' || ENTL.match(g) }
   end
 
   def to_h
@@ -126,9 +126,11 @@ def load_and_index(path)
     count = i + 1
   end
 
-  roots.values.each do |a|
+  roots.each do |k, v|
 
-    a.sort_by! { |e| e.romaji.first }
+    q = /^#{k}/
+
+    v.sort_by! { |e| e.romaji.find { |ro| ro.match(q) } }
   end
 
   [ roots, count ]
