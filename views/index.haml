@@ -1,9 +1,11 @@
 
-%div#search
-  %input#query{ :type => :text }
-  %input#go{ :type => :submit, :value => 'x' }
+#content
 
-%div#results
+  #search
+    %input#query{ :type => :text }
+    %input#go{ :type => :submit, :value => 'x' }
+
+  #results
 
 :javascript
 
@@ -32,11 +34,24 @@
     };
 
     $('#query').on('keyup', function(ev) {
-      var q = $('#query').val();
+
+      var q = $.trim($('#query').val());
+
+      if (q === '') {
+        displayResults('', []);
+        return;
+      }
+
       $.ajax({
         url: '/query/' + q,
         success: function(data) { displayResults(q, data); }
       });
+    });
+
+    $('#go').on('click', function(ev) {
+
+      $('#query').val('');
+      displayResults('', []);
     });
   });
 

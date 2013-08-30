@@ -10,7 +10,7 @@ $roots, count = load_and_index('data/edict2.txt')
 
 puts "loaded and indexed #{count} entries, took #{Time.now - t} seconds"
 
-MAX = 28
+MAX = 77
 
 
 configure do

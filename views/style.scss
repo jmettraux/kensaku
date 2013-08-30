@@ -1,5 +1,27 @@
 @import 'compass/reset';
 
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+#content {
+  width: 550px;
+  margin: 0 auto;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+
+#search {
+  background-color: lightblue;
+}
+
 .entry {
+  margin-top: 0.3em;
   border-bottom: 1px solid black;
+}
+.ki {
+  font-size: 200%;
+}
+.ka {
+  font-size: 110%;
 }
