@@ -17,13 +17,14 @@
 
       if (results === []) return;
 
-      // TODO: remove previous results...
       $results.empty();
 
       Nu.each(results, function(entry) {
+
         var e = Fb.c($results, '.entry');
+
         $(e).attr('data-ks-query', query);
-        //console.log(JSON.stringify(entry));
+
         var ki = e.div('.ki');
         var ka = e.div('.ka');
         var gs = e.div('.gs')
