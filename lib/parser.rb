@@ -24,10 +24,8 @@
 # Made in Japan.
 #++
 
-require 'pp'
-#require 'rufus-json/automatic'
+require 'rufus-json/automatic'
 require 'mojinizer'
-require_relative 'mem'
 
 
 class Entry
@@ -71,6 +69,11 @@ class Entry
     }
   end
 
+  def to_json
+
+    Rufus::Json.dump(to_h)
+  end
+
   protected
 
   VOWELS = %w[ a e i o u ]
@@ -100,45 +103,34 @@ class Entry
   end
 end
 
-pmem 'start'
+def load_and_index(path)
 
-t = Time.now
-roots = {}
-count = 0
+  #t = Time.now
+  roots = {}
+  count = 0
 
-File.readlines('data/edict2.txt').each_with_index do |s, i|
+  File.readlines('data/edict2.txt').each_with_index do |s, i|
 
-  e = Entry.new(i + 1, s)
+    e = Entry.new(i + 1, s)
 
-  e.split_romaji.each do |sr|
-    s = sr.shift
-    loop do
-      #p s
-      (roots[s] ||= []) << e
-      n = sr.shift
-      break unless n
-      s = s + n
+    e.split_romaji.each do |sr|
+      s = sr.shift
+      loop do
+        (roots[s] ||= []) << e
+        n = sr.shift
+        break unless n
+        s = s + n
+      end
     end
+
+    count = i + 1
   end
 
-  count = i + 1
+  roots.values.each do |a|
+
+    a.sort_by! { |e| e.romaji.first }
+  end
+
+  [ roots, count ]
 end
-
-roots.values.each do |a|
-
-  a.sort_by! { |e| e.romaji.first }
-end
-
-d = Time.now - t
-
-puts "done, #{count} entries, took #{d} seconds."
-
-p roots.keys.size
-pp roots['a'].take(20).collect { |e| e.romaji }
-#pp roots['aa'].take(20).collect { |e| e.romaji }
-#roots.keys.sort.each do |k|
-#  print "#{k}: #{roots[k].size}, "
-#end
-
-pmem 'end'
 
