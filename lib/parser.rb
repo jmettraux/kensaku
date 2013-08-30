@@ -54,7 +54,23 @@ class Entry
     @romaji = syls.collect(&:romaji)
     @split_romaji = @romaji.collect { |r| split(r) }
 
-    @glosses = m[5].split('/').reject { |g| g == '(P)' || ENTL.match(g) }
+    @glosses =
+      m[5].split('/').reject { |g|
+
+        g == '(P)' || ENTL.match(g)
+
+      }.inject([]) { |a, gs|
+
+        last = a.last || ''
+
+        if a.empty? || gs.match(/^\(\d+\)/)
+          a << gs
+        else
+          a[a.size - 1] = last + '; ' + gs
+        end
+
+        a
+      }
   end
 
   def to_h
