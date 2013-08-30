@@ -9,9 +9,34 @@
 
   Caboche.last(function() {
 
+    var $results = $('#results');
+
+    var displayResults = function(query, results) {
+
+      if (results === []) return;
+
+      // TODO: remove previous results...
+      $results.empty();
+
+      Nu.each(results, function(entry) {
+        var e = Fb.c($results, '.entry');
+        $(e).attr('data-ks-query', query);
+        //console.log(JSON.stringify(entry));
+        var ki = e.div('.ki');
+        var ka = e.div('.ka');
+        var gs = e.div('.gs')
+        Nu.each(entry.ki, function(kanji) { ki.div('.kanji', kanji); });
+        Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
+        Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
+      });
+    };
+
     $('#query').on('keyup', function(ev) {
-      var r = Fb.w($('#results'));
-      r.div('.result', $('#query').val());
+      var q = $('#query').val();
+      $.ajax({
+        url: '/query/' + q,
+        success: function(data) { displayResults(q, data); }
+      });
     });
   });
 
