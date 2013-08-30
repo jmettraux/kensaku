@@ -11,7 +11,13 @@
 
   Caboche.last(function() {
 
+    var $query = $('#query');
     var $results = $('#results');
+
+    $query.attr('autocapitalize', 'off');
+    $query.attr('autocomplete', 'off');
+    $query.attr('autocorrect', 'off');
+    $query.attr('spellcheck', 'false');
 
     var displayResults = function(query, results) {
 
@@ -34,9 +40,9 @@
       });
     };
 
-    $('#query').on('keyup', function(ev) {
+    $query.on('keyup', function(ev) {
 
-      var q = $.trim($('#query').val());
+      var q = $.trim($query.val());
 
       if (q === '') {
         displayResults('', []);
@@ -51,7 +57,7 @@
 
     $('#go').on('click', function(ev) {
 
-      $('#query').val('');
+      $query.val('');
       displayResults('', []);
     });
   });
