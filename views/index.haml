@@ -3,7 +3,10 @@
 
   #search
     %input#query{ :type => :text }
-    %input#go{ :type => :submit, :value => 'x' }
+    %span.clear
+      X
+    %span.menu
+      V
 
   #results
 
@@ -33,9 +36,12 @@
 
         var ki = e.div('.ki');
         var ka = e.div('.ka');
-        var gs = e.div('.gs')
         Nu.each(entry.ki, function(kanji) { ki.div('.kanji', kanji); });
         Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
+
+        e.span('.add', { 'data-ks-line': entry.li }, 'V')
+
+        var gs = e.div('.gs')
         Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
       });
     };
@@ -55,10 +61,11 @@
       });
     });
 
-    $('#go').on('click', function(ev) {
+    $('.clear').on('click', function(ev) {
 
       $query.val('');
       displayResults('', []);
+      $query.focus();
     });
   });
 

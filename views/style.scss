@@ -16,11 +16,22 @@ body {
 }
 
 #search {
+  text-align: center;
   padding-top: 0.3em;
+  padding-bottom: 0.7em;
+  border-bottom: 1px solid white;
 }
 
 input#query {
   font-size: 120%;
+  width: 200px;
+}
+span.clear {
+  display: inline-block;
+}
+span.menu {
+  display: inline-block;
+  margin-left: 0.5em;
 }
 
 .entry {
@@ -29,7 +40,7 @@ input#query {
 }
 .ki {
   font-size: 200%;
-  width: 60%;
+  width: 65%;
   float: left;
 }
 .ka {
@@ -41,5 +52,11 @@ input#query {
 }
 .gloss {
   margin-top: 0.2em;
+}
+.add {
+  float: right;
+  margin-right: 2em;
+  font-size: 50%;
+  font-weight: 50%;
 }
 
