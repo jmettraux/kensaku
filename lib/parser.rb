@@ -35,7 +35,7 @@ class Entry
   R = /^([^;\s]+)(?:;([^:\s]+))* (?:\[([^;\s]+)(?:;([^:\s]+))*\] )?\/(.+)\/$/
   ENTL = /^EntL\d+X?$/
 
-  PREX = %w[ ki shi chi ni hi mi ri gi ji bi pi te de u vu ]
+  CIRCLES = %w[ ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ]
 
   def initialize(line, s)
 
@@ -70,6 +70,12 @@ class Entry
         end
 
         a
+
+      }.collect { |g|
+
+        (1..10).each { |i| g.gsub!(/\(#{i}\)/, CIRCLES[i - 1]) }
+
+        g
       }
   end
 
