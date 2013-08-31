@@ -63,7 +63,7 @@ class Entry
 
         last = a.last || ''
 
-        if a.empty? || gs.match(/^\(\d+\)/)
+        if a.empty? || gs.match(/\(\d+\)/)
           a << gs
         else
           a[a.size - 1] = last + '; ' + gs
