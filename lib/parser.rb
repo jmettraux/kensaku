@@ -114,6 +114,9 @@ class Entry
 
   def self.split(s)
 
+    s = s.split('.').first
+      # for kanjidic "hiro.maru" and co
+
     a = []
     cs = s.chars.to_a
 
@@ -170,5 +173,35 @@ def load_and_index(path)
   end
 
   [ roots, count ]
+end
+
+File.readlines('data/kanjidic.txt').each_with_index do |s, l|
+
+  next if s.match(/^#/)
+
+  puts s
+  #break if l > 3
+
+  i = s.index('{')
+  head = s[0..i - 2]
+  tail = s[i..-2]
+
+  ss = head.split(' ')
+  e = Entry.new
+  e.line = "k#{l + 1}"
+  e.kanji = [ ss.shift ]
+  e.glosses = []
+  e.glosses << ss.select { |str| ! str.chars.first.kana? }.join(' ')
+  e.kana = ss.select { |str| str.chars.first.kana? }
+  e.romaji = e.kana.collect { |k| k.romaji }.uniq
+  #e.split_romaji = e.romaji.collect { |r| split(r) }
+  e.glosses.concat(
+    tail.split('{').collect { |x|
+      x.gsub('}', '').strip
+    }.reject { |x|
+      x.length < 1
+    }
+  )
+  puts e.to_json
 end
 
