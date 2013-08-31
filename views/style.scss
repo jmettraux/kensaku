@@ -2,22 +2,27 @@
 
 body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  background-color: black;
+  color: white;
 }
 
 #content {
   width: 300px;
   margin: 0 auto;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
+  border-left: 1px solid white;
+  border-right: 1px solid white;
 }
 
 #search {
-  background-color: lightblue;
+}
+
+input#query {
+  font-size: 120%;
 }
 
 .entry {
   margin-top: 0.3em;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid white;
 }
 .ki {
   font-size: 200%;
@@ -28,7 +33,10 @@ body {
   font-size: 110%;
 }
 .gs {
-  margin-top: 0.2em;
+  margin-top: 0.1em;
   clear: both;
+}
+.gloss {
+  margin-top: 0.2em;
 }
 
