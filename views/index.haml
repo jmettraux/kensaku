@@ -62,7 +62,7 @@
 
     $query.on('keyup', function(ev) {
 
-      var q = $.trim($query.val());
+      var q = $.trim($query.val()).toLowerCase();
 
       if (q === '') {
         displayResults('', []);
