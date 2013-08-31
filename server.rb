@@ -5,10 +5,11 @@ require 'compass'
 
 require_relative 'lib/parser.rb'
 
-t = Time.now
-$roots, count = load_and_index('data/edict2.txt')
+$roots = {}
+load_words
+load_kanji
+sort_roots
 
-puts "loaded and indexed #{count} entries, took #{Time.now - t} seconds"
 
 MAX = 77
 
@@ -23,11 +24,11 @@ configure do
   set :scss, Compass.sass_engine_options
 end
 
-#use(
-#  Rack::Static,
-#  :urls => %w[ /images /js ],
-#  :root => File.join(File.dirname(__FILE__), 'static'))
-#use(Rack::MethodOverride)
+use(
+  Rack::Static,
+  :urls => %w[ /js ],
+  :root => File.join(File.dirname(__FILE__), 'static'))
+use(Rack::MethodOverride)
 
 get '/style.css' do
 

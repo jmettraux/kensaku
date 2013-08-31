@@ -36,6 +36,7 @@ class Entry
   ENTL = /^EntL\d+X?$/
   VOWELS = %w[ a e i o u ]
   CIRCLES = %w[ ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ]
+  #FINAL_TSU = /h!$/
 
   def self.parse_edict2_entry(line, s)
 
@@ -52,8 +53,11 @@ class Entry
     e.kana = e.kana.collect { |k| k.split('(').first }.uniq
 
     syls = e.kana.empty? ? e.kanji : e.kana
-
+    syls = syls.collect { |s| s.gsub(/・/, '') }
     e.romaji = syls.collect(&:romaji)
+    e.romaji = e.romaji.reject { |s| s == '' || s.chars.first.japanese? }
+    #e.romaji = e.romaji.collect { |s| s.match(FINAL_TSU) ? s[0..-3] + 'tsu' : s }
+
     e.split_romaji = e.romaji.collect { |r| split(r) }
 
     e.glosses =
@@ -79,6 +83,35 @@ class Entry
 
         g
       }
+
+    e
+  end
+
+  def self.parse_kanjidic_entry(line, s)
+
+    i = s.index('{')
+    head = s[0..i - 2]
+    tail = s[i..-2]
+
+    ss = head.split(' ')
+
+    e = Entry.new
+
+    e.line = "k#{line}"
+    e.kanji = [ ss.shift ]
+    e.glosses = []
+    e.glosses << ss.select { |str| ! str.chars.first.kana? }.join(' ')
+    e.kana = ss.select { |str| str.chars.first.kana? }
+    e.romaji = e.kana.collect { |k| k.romaji }.uniq
+    e.split_romaji = e.romaji.collect { |r| split(r) }
+
+    e.glosses.concat(
+      tail.split('{').collect { |x|
+        x.gsub('}', '').strip
+      }.reject { |x|
+        x.length < 1
+      }
+    )
 
     e
   end
@@ -114,8 +147,12 @@ class Entry
 
   def self.split(s)
 
+    #raise "not romaji >#{s}<" unless s.match(/^[a-z\.]+$/)
+
     s = s.split('.').first
       # for kanjidic "hiro.maru" and co
+
+    return [] if s == nil
 
     a = []
     cs = s.chars.to_a
@@ -140,29 +177,66 @@ class Entry
   end
 end
 
-def load_and_index(path)
+def index_entry(e)
 
-  roots = {}
+  e.split_romaji.each do |sr|
+    s = sr.shift
+    loop do
+      ($roots[s] ||= []) << e
+      n = sr.shift
+      break unless n
+      s = s + n
+    end
+  end
+end
+
+def load_words
+
+  puts "data/edict2.txt"
+
+  t = Time.now
   count = 0
 
-  File.readlines('data/edict2.txt').each_with_index do |s, i|
+  File.readlines('data/edict2.txt').each_with_index do |s, l|
 
-    e = Entry.parse_edict2_entry(i + 1, s)
+    next if s.match(/^　？？？/) # copyright
 
-    e.split_romaji.each do |sr|
-      s = sr.shift
-      loop do
-        (roots[s] ||= []) << e
-        n = sr.shift
-        break unless n
-        s = s + n
-      end
-    end
+    index_entry(Entry.parse_edict2_entry(l + 1, s))
 
-    count = i + 1
+    count = l + 1
   end
 
-  roots.each do |k, v|
+  puts "data/edict2.txt  loaded #{count} entries, took #{Time.now - t}s"
+end
+
+def load_kanji
+
+  puts "data/kanjidic.txt"
+
+  t = Time.now
+  count = 0
+
+  File.readlines('data/kanjidic.txt').each_with_index do |s, l|
+
+    next if s.match(/^#/) # copyright
+
+    index_entry(Entry.parse_kanjidic_entry(l + 1, s))
+
+    count = l + 1
+  end
+
+  puts "data/kanjidic.txt  loaded #{count} entries, took #{Time.now - t}s"
+end
+
+def sort_roots
+
+  t = Time.now
+
+  puts "#{$roots.size} roots"
+  count = $roots.values.inject(0) { |count, entries| count + entries.size }
+  puts "#{count} entry references"
+
+  $roots.each do |k, v|
 
     q = /^#{k}/
 
@@ -172,36 +246,8 @@ def load_and_index(path)
     v.sort_by! { |e| e.romaji.find { |ro| ro.match(q) } }
   end
 
-  [ roots, count ]
-end
-
-File.readlines('data/kanjidic.txt').each_with_index do |s, l|
-
-  next if s.match(/^#/)
-
-  puts s
-  #break if l > 3
-
-  i = s.index('{')
-  head = s[0..i - 2]
-  tail = s[i..-2]
-
-  ss = head.split(' ')
-  e = Entry.new
-  e.line = "k#{l + 1}"
-  e.kanji = [ ss.shift ]
-  e.glosses = []
-  e.glosses << ss.select { |str| ! str.chars.first.kana? }.join(' ')
-  e.kana = ss.select { |str| str.chars.first.kana? }
-  e.romaji = e.kana.collect { |k| k.romaji }.uniq
-  #e.split_romaji = e.romaji.collect { |r| split(r) }
-  e.glosses.concat(
-    tail.split('{').collect { |x|
-      x.gsub('}', '').strip
-    }.reject { |x|
-      x.length < 1
-    }
-  )
-  puts e.to_json
+  count = $roots.values.inject(0) { |count, entries| count + entries.size }
+  puts "#{count} entry references"
+  puts "took #{Time.now - t}s"
 end
 
