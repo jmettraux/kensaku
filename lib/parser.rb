@@ -30,31 +30,33 @@ require 'mojinizer'
 
 class Entry
 
-  attr_reader :line, :kanji, :kana, :romaji, :split_romaji, :glosses
+  attr_accessor :line, :kanji, :kana, :romaji, :split_romaji, :glosses
 
   R = /^([^;\s]+)(?:;([^:\s]+))* (?:\[([^;\s]+)(?:;([^:\s]+))*\] )?\/(.+)\/$/
   ENTL = /^EntL\d+X?$/
-
+  VOWELS = %w[ a e i o u ]
   CIRCLES = %w[ ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ]
 
-  def initialize(line, s)
+  def self.parse_edict2_entry(line, s)
 
-    @line = line
+    e = Entry.new
+
+    e.line = "e#{line}"
 
     m = R.match(s)
 
-    @kanji = [ m[1], *(m[2] ? m[2].split(';') : []) ]
-    @kanji = @kanji.collect { |k| k.split('(').first }.uniq
+    e.kanji = [ m[1], *(m[2] ? m[2].split(';') : []) ]
+    e.kanji = e.kanji.collect { |k| k.split('(').first }.uniq
 
-    @kana = [ m[3], *(m[4] ? m[4].split(';') : []) ].compact
-    @kana = @kana.collect { |k| k.split('(').first }.uniq
+    e.kana = [ m[3], *(m[4] ? m[4].split(';') : []) ].compact
+    e.kana = e.kana.collect { |k| k.split('(').first }.uniq
 
-    syls = @kana.empty? ? kanji : kana
+    syls = e.kana.empty? ? e.kanji : e.kana
 
-    @romaji = syls.collect(&:romaji)
-    @split_romaji = @romaji.collect { |r| split(r) }
+    e.romaji = syls.collect(&:romaji)
+    e.split_romaji = e.romaji.collect { |r| split(r) }
 
-    @glosses =
+    e.glosses =
       m[5].split('/').reject { |g|
 
         g == '(P)' || ENTL.match(g)
@@ -77,6 +79,8 @@ class Entry
 
         g
       }
+
+    e
   end
 
   def to_h
@@ -98,7 +102,7 @@ class Entry
 
   def hash
 
-    @line
+    @line.hash
   end
 
   def eql?(o)
@@ -108,9 +112,7 @@ class Entry
 
   protected
 
-  VOWELS = %w[ a e i o u ]
-
-  def split(s)
+  def self.split(s)
 
     a = []
     cs = s.chars.to_a
@@ -137,13 +139,12 @@ end
 
 def load_and_index(path)
 
-  #t = Time.now
   roots = {}
   count = 0
 
   File.readlines('data/edict2.txt').each_with_index do |s, i|
 
-    e = Entry.new(i + 1, s)
+    e = Entry.parse_edict2_entry(i + 1, s)
 
     e.split_romaji.each do |sr|
       s = sr.shift
