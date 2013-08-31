@@ -6,6 +6,8 @@
     %span.clear
       X
 
+  #cols
+
   #results
 
 :javascript
@@ -13,6 +15,7 @@
   Caboche.last(function() {
 
     var $query = $('#query');
+    var $cols = $('#cols');
     var $results = $('#results');
 
     $query.attr('autocapitalize', 'off');
@@ -24,15 +27,15 @@
 
       if (results === []) return;
 
+      $cols.empty();
       $results.empty();
 
       var cols = 0;
-      var dcols = Fb.c($results, 'div.cols');
       Nu.each(results, function(entry) {
-        if (cols > 6) return;
+        if (cols === 7) return;
         if (entry.ki.length < 1) return;
         cols = cols + 1;
-        var $col = dcols.div('.col', entry.ki[0]).$;
+        var $col = Fb.c($cols, '.col', entry.ki[0]).$;
         $col.on('click', function(ev) {
           window.location.href = '#' + entry.li;
         });

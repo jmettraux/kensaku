@@ -34,16 +34,21 @@ span.menu {
   margin-left: 0.5em;
 }
 
-.cols {
+#cols {
   -webkit-writing-mode: vertical-rl;
+  float: right;
+  width: 300px;
   border-bottom: 1px solid white;
-  width: 100%;
 }
 .col {
-  font-size: 150%;
+  font-size: 151%;
   border-left: 1px solid white;
-  padding: 0.3em;
-  padding-right: 0.45em;
+  padding: 0.29em;
+  padding-right: 0.46em;
+}
+
+#results {
+  clear: both;
 }
 
 .entry {
