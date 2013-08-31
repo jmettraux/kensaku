@@ -44,6 +44,8 @@ get '/query/:start' do
   results = ($roots[params[:start]] || []).take(MAX)
 
   content_type 'application/json; charset=utf-8'
+  cache_control :public, max_age: 7 * 24 * 3600 # cache for 7d
+
   Rufus::Json.encode(results.collect(&:to_h))
 end
 
