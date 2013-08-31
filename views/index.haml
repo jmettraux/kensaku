@@ -5,8 +5,6 @@
     %input#query{ :type => :text }
     %span.clear
       X
-    %span.menu
-      V
 
   #results
 
@@ -28,9 +26,21 @@
 
       $results.empty();
 
+      var cols = 0;
+      var dcols = Fb.c($results, 'div.cols');
+      Nu.each(results, function(entry) {
+        if (cols > 6) return;
+        if (entry.ki.length < 1) return;
+        cols = cols + 1;
+        var $col = dcols.div('.col', entry.ki[0]).$;
+        $col.on('click', function(ev) {
+          window.location.href = '#' + entry.li;
+        });
+      });
+
       Nu.each(results, function(entry) {
 
-        var e = Fb.c($results, '.entry');
+        var e = Fb.c($results, '#' + entry.li + '.entry');
 
         $(e).attr('data-ks-query', query);
 
@@ -39,7 +49,7 @@
         Nu.each(entry.ki, function(kanji) { ki.div('.kanji', kanji); });
         Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
 
-        e.span('.add', { 'data-ks-line': entry.li }, 'V')
+        e.span('.add', { 'data-ks-line': entry.li }, '♻')
 
         var gs = e.div('.gs')
         Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });

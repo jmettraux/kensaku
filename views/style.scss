@@ -34,6 +34,18 @@ span.menu {
   margin-left: 0.5em;
 }
 
+.cols {
+  -webkit-writing-mode: vertical-rl;
+  border-bottom: 1px solid white;
+  width: 100%;
+}
+.col {
+  font-size: 150%;
+  border-left: 1px solid white;
+  padding: 0.3em;
+  padding-right: 0.45em;
+}
+
 .entry {
   padding: 0.3em;
   border-bottom: 1px solid white;
@@ -56,7 +68,7 @@ span.menu {
 .add {
   float: right;
   margin-right: 2em;
-  font-size: 50%;
-  font-weight: 50%;
+  font-size: 70%;
+  font-weight: 70%;
 }
 
