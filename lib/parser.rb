@@ -44,10 +44,10 @@ class Entry
     m = R.match(s)
 
     @kanji = [ m[1], *(m[2] ? m[2].split(';') : []) ]
-    @kanji = @kanji.collect { |k| k.split('(').first }
+    @kanji = @kanji.collect { |k| k.split('(').first }.uniq
 
     @kana = [ m[3], *(m[4] ? m[4].split(';') : []) ].compact
-    @kana = @kana.collect { |k| k.split('(').first }
+    @kana = @kana.collect { |k| k.split('(').first }.uniq
 
     syls = @kana.empty? ? kanji : kana
 
@@ -76,18 +76,28 @@ class Entry
   def to_h
 
     {
-      'li' => line,
-      'ki' => kanji,
-      'ka' => kana,
-      'ro' => romaji,
-      #'sr' => split_romaji,
-      'gs' => glosses
+      'li' => @line,
+      'ki' => @kanji,
+      'ka' => @kana,
+      'ro' => @romaji,
+      #'sr' => @split_romaji,
+      'gs' => @glosses
     }
   end
 
   def to_json
 
     Rufus::Json.dump(to_h)
+  end
+
+  def hash
+
+    @line
+  end
+
+  def eql?(o)
+
+    o.is_a?(Entry) && o.hash == self.hash
   end
 
   protected
@@ -146,6 +156,9 @@ def load_and_index(path)
 
     q = /^#{k}/
 
+    s0 = v.size
+    v.uniq!
+    s1 = v.size
     v.sort_by! { |e| e.romaji.find { |ro| ro.match(q) } }
   end
 
