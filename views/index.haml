@@ -52,11 +52,26 @@
         Nu.each(entry.ki, function(kanji) { ki.div('.kanji', kanji); });
         Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
 
-        e.span('.add', { 'data-ks-line': entry.li }, '♻')
-
         var gs = e.div('.gs')
         Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
+
         gs.div('.gloss', entry.li.toString());
+
+        if (#{params[:u] != nil}) {
+
+          var $add = e.span('.add', { 'data-ks-line': entry.li }, '♻').$;
+
+          $add.on('click', function(ev) {
+            var $target = $(ev.target);
+            var query = $target.closest('.entry').attr('data-ks-query');
+            var line = $target.attr('data-ks-line');
+            $.ajax({
+              url: '/note/#{params[:u]}/' + query + '/' + line,
+              method: 'POST',
+              data: ''
+            });
+          });
+        }
       });
     };
 

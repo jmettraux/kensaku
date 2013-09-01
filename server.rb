@@ -50,3 +50,44 @@ get '/query/:start' do
   Rufus::Json.encode(results.collect(&:to_h))
 end
 
+get '/ip' do
+
+  content_type 'text/plain'
+
+  request.ip
+end
+
+def white_ip?(ip)
+
+  return true if ip == '127.0.0.1'
+  return true if ip == '::1'
+
+  begin; File.readlines('white_ips.txt'); rescue []; end.each do |line|
+
+    return true if ip.match(line)
+  end
+
+  false
+end
+
+post '/note/:u/:start/:line' do
+
+  content_type 'application/json; charset=utf-8'
+
+  return '[]' unless white_ip?(request.ip)
+
+  u = params[:u]
+
+  return '[]' if u.nil?
+  return '[]' unless u.match(/^[a-z0-9]+$/)
+
+  entries = ($roots[params[:start].downcase] || []).take(MAX)
+  entry = entries.find { |e| e.line == params[:line] }
+
+  return '[]' unless entry
+
+  File.open("notes/#{u}.json", 'ab') { |f| f.puts(entry.to_json) }
+
+  '[]'
+end
+
