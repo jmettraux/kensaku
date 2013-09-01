@@ -3,12 +3,8 @@ require 'sinatra'
 require 'haml'
 require 'compass'
 
-require_relative 'lib/parser.rb'
-
-$roots = {}
-load_words
-load_kanji
-sort_roots
+#require_relative 'lib/parser.rb'
+#Index.load_roots
 
 
 MAX = 77
@@ -42,7 +38,8 @@ end
 
 get '/query/:start' do
 
-  results = ($roots[params[:start].downcase] || []).take(MAX)
+  #results = ($roots[params[:start].downcase] || []).take(MAX)
+  results = Index.query(params[:start].downcase, MAX)
 
   content_type 'application/json; charset=utf-8'
   cache_control :public, max_age: 7 * 24 * 3600 # cache for 7d

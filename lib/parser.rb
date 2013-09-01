@@ -36,7 +36,6 @@ class Entry
   ENTL = /^EntL\d+X?$/
   VOWELS = %w[ a e i o u ]
   CIRCLES = %w[ ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ]
-  #FINAL_TSU = /h!$/
 
   def self.parse_edict2_entry(line, s)
 
@@ -52,13 +51,8 @@ class Entry
     e.kana = [ m[3], *(m[4] ? m[4].split(';') : []) ].compact
     e.kana = e.kana.collect { |k| k.split('(').first }.uniq
 
-    syls = e.kana.empty? ? e.kanji : e.kana
-    syls = syls.collect { |s| s.gsub(/・/, '') }
-    e.romaji = syls.collect(&:romaji)
-    e.romaji = e.romaji.reject { |s| s == '' || s.chars.first.japanese? }
-    #e.romaji = e.romaji.collect { |s| s.match(FINAL_TSU) ? s[0..-3] + 'tsu' : s }
-
-    e.split_romaji = e.romaji.collect { |r| split(r) }
+    e.romaji = filter_romaji(e.kana.empty? ? e.kanji : e.kana)
+    e.split_romaji = e.romaji.collect { |r| split_romaji(r) }
 
     e.glosses =
       m[5].split('/').reject { |g|
@@ -102,8 +96,8 @@ class Entry
     e.glosses = []
     e.glosses << ss.select { |str| ! str.chars.first.kana? }.join(' ')
     e.kana = ss.select { |str| str.chars.first.kana? }
-    e.romaji = e.kana.collect { |k| k.romaji }.uniq
-    e.split_romaji = e.romaji.collect { |r| split(r) }
+    e.romaji = filter_romaji(e.kana)
+    e.split_romaji = e.romaji.collect { |r| split_romaji(r) }
 
     e.glosses.concat(
       tail.split('{').collect { |x|
@@ -145,7 +139,22 @@ class Entry
 
   protected
 
-  def self.split(s)
+  def self.filter_romaji(ss)
+
+    ss.collect { |s|
+      s.romaji
+    }.collect { |s|
+      s.gsub(/・/, '')
+    }.reject { |s|
+      s == '' || s.chars.first.japanese?
+    }.collect { |s|
+      s.gsub('h!', 'ts')
+    }.collect { |s|
+      s.gsub('xtsu', 'ts')
+    }.uniq
+  end
+
+  def self.split_romaji(s)
 
     #raise "not romaji >#{s}<" unless s.match(/^[a-z\.]+$/)
 
@@ -177,77 +186,150 @@ class Entry
   end
 end
 
-def index_entry(e)
+module Index
 
-  e.split_romaji.each do |sr|
-    s = sr.shift
-    loop do
-      ($roots[s] ||= []) << e
-      n = sr.shift
-      break unless n
-      s = s + n
+  def self.index_entry(e)
+
+    @@entries[e.line[0, 1]] << e
+
+    e.split_romaji.each do |sr|
+
+      s = sr.shift
+      loop do
+        (@@roots[s] ||= []) << e
+        n = sr.shift
+        break unless n
+        s = s + n
+      end
     end
   end
-end
 
-def load_words
+  def self.load_words
 
-  puts "data/edict2.txt"
+    puts "data/edict2.txt"
 
-  t = Time.now
-  count = 0
+    t = Time.now
+    count = 0
 
-  File.readlines('data/edict2.txt').each_with_index do |s, l|
+    File.readlines('data/edict2.txt').each_with_index do |s, l|
 
-    next if s.match(/^　？？？/) # copyright
+      next if s.match(/^　？？？/) # copyright
 
-    index_entry(Entry.parse_edict2_entry(l + 1, s))
+      index_entry(Entry.parse_edict2_entry(l + 1, s))
 
-    count = l + 1
+      count = l + 1
+    end
+
+    puts "data/edict2.txt  loaded #{count} entries, took #{Time.now - t}s"
   end
 
-  puts "data/edict2.txt  loaded #{count} entries, took #{Time.now - t}s"
-end
+  def self.load_kanji
 
-def load_kanji
+    puts "data/kanjidic.txt"
 
-  puts "data/kanjidic.txt"
+    t = Time.now
+    count = 0
 
-  t = Time.now
-  count = 0
+    File.readlines('data/kanjidic.txt').each_with_index do |s, l|
 
-  File.readlines('data/kanjidic.txt').each_with_index do |s, l|
+      next if s.match(/^#/) # copyright
 
-    next if s.match(/^#/) # copyright
+      index_entry(Entry.parse_kanjidic_entry(l + 1, s))
 
-    index_entry(Entry.parse_kanjidic_entry(l + 1, s))
+      count = l + 1
+    end
 
-    count = l + 1
+    puts "data/kanjidic.txt  loaded #{count} entries, took #{Time.now - t}s"
   end
 
-  puts "data/kanjidic.txt  loaded #{count} entries, took #{Time.now - t}s"
-end
+  def self.sort_roots
 
-def sort_roots
+    t = Time.now
 
-  t = Time.now
+    puts "#{@@roots.size} roots"
+    count = @@roots.values.inject(0) { |count, entries| count + entries.size }
+    puts "#{count} entry references"
 
-  puts "#{$roots.size} roots"
-  count = $roots.values.inject(0) { |count, entries| count + entries.size }
-  puts "#{count} entry references"
+    @@roots.keys.each do |k|
 
-  $roots.each do |k, v|
+      q = /^#{k}/
 
-    q = /^#{k}/
+      @@roots[k] =
+        @@roots[k].uniq.sort_by { |e|
+          e.romaji.find { |ro| ro.match(q) }
+        }.collect { |e|
+          e.line
+        }
+    end
 
-    s0 = v.size
-    v.uniq!
-    s1 = v.size
-    v.sort_by! { |e| e.romaji.find { |ro| ro.match(q) } }
+    count = @@roots.values.inject(0) { |count, entries| count + entries.size }
+    puts "#{count} entry references"
+    puts "took #{Time.now - t}s"
   end
 
-  count = $roots.values.inject(0) { |count, entries| count + entries.size }
-  puts "#{count} entry references"
-  puts "took #{Time.now - t}s"
+  def self.write
+
+    t = Time.now
+
+    File.open('data/roots.json', 'wb') do |f|
+      f.puts(Rufus::Json.dump(@@roots))
+    end
+
+    puts "wrote data/roots.json, took #{Time.now - t}s"
+
+    t = Time.now
+
+    File.open('data/edict2.json', 'wb') do |f|
+      @@entries['e'].each do |entry|
+        f.puts(entry.to_json)
+      end
+    end
+
+    puts "wrote data/edict2.json, took #{Time.now - t}s"
+
+    t = Time.now
+
+    File.open('data/kanjidic.json', 'wb') do |f|
+      @@entries['k'].each do |entry|
+        f.puts(entry.to_json)
+      end
+    end
+
+    puts "wrote data/kanjidic.json, took #{Time.now - t}s"
+  end
+
+  def self.generate
+
+    @@roots = {}
+    @@entries = { 'k' => [ Entry.new ], 'e' => [ Entry.new ] }
+      # the two blank entries are the zero lines
+
+    load_words
+    load_kanji
+
+    sort_roots
+    write
+  end
+
+  def self.load
+
+    t = Time.now
+
+    @@roots = Rufus::Json.decode(File.read('data/roots.json'))
+    @@edict2 = File.readlines('data/edict2.json')
+    @@kanjidic = File.readlines('data/kanjidic.json')
+
+    puts "loaded the json files, took #{Time.now - t}s"
+  end
+
+  #def self.hentry(fline)
+  #  (@@entries[fline[0, 1]] || [])[fline[1..-1].to_i]
+  #end
+  #def self.query(start, max)
+  #  ($roots[start] || []).take(max).collect { |l| load_entry(l) }
+  #end
 end
+
+#Index.generate
+Index.load
 
