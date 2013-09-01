@@ -6,8 +6,8 @@ require 'compass'
 require_relative 'lib/parser.rb'
 
 $roots = {}
-load_words
-load_kanji
+#load_words
+#load_kanji
 sort_roots
 
 
@@ -54,7 +54,7 @@ get '/ip' do
 
   content_type 'text/plain'
 
-  request.ip
+  [ request.ip, env['X-REAL-IP'] ].inspect
 end
 
 def white_ip?(ip)
@@ -74,17 +74,17 @@ post '/note/:u/:start/:line' do
 
   content_type 'application/json; charset=utf-8'
 
-  return '[]' unless white_ip?(request.ip)
+  halt '[]' unless white_ip?(request.ip)
 
   u = params[:u]
 
-  return '[]' if u.nil?
-  return '[]' unless u.match(/^[a-z0-9]+$/)
+  halt '[]' if u.nil?
+  halt '[]' unless u.match(/^[a-z0-9]+$/)
 
   entries = ($roots[params[:start].downcase] || []).take(MAX)
   entry = entries.find { |e| e.line == params[:line] }
 
-  return '[]' unless entry
+  halt '[]' unless entry
 
   File.open("notes/#{u}.json", 'ab') { |f| f.puts(entry.to_json) }
 
