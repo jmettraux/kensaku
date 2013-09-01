@@ -3,7 +3,7 @@ require 'sinatra'
 require 'haml'
 require 'compass'
 
-require_relative 'lib/parser.rb'
+require_relative 'lib/index.rb'
 Index.load
 
 
@@ -24,7 +24,9 @@ use(
   Rack::Static,
   :urls => %w[ /js ],
   :root => File.join(File.dirname(__FILE__), 'static'))
-use(Rack::MethodOverride)
+#use(
+#  Rack::MethodOverride)
+
 
 get '/style.css' do
 
@@ -73,7 +75,7 @@ def white_ip?(ip)
   false
 end
 
-post '/note/:u/:start/:line' do
+post '/note/:u/:line' do
 
   content_type 'application/json; charset=utf-8'
 
@@ -84,12 +86,9 @@ post '/note/:u/:start/:line' do
   halt '[]' if u.nil?
   halt '[]' unless u.match(/^[a-z0-9]+$/)
 
-  entries = ($roots[params[:start].downcase] || []).take(MAX)
-  entry = entries.find { |e| e.line == params[:line] }
-
-  halt '[]' unless entry
-
-  File.open("notes/#{u}.json", 'ab') { |f| f.puts(entry.to_json) }
+  if entry = Index.entry(params[:line].downcase)
+    File.open("notes/#{u}.json", 'ab') { |f| f.puts(entry) }
+  end
 
   '[]'
 end

@@ -63,10 +63,9 @@
 
           $add.on('click', function(ev) {
             var $target = $(ev.target);
-            var query = $target.closest('.entry').attr('data-ks-query');
             var line = $target.attr('data-ks-line');
             $.ajax({
-              url: '/note/#{params[:u]}/' + query + '/' + line,
+              url: '/note/#{params[:u]}/' + line,
               method: 'POST',
               data: ''
             });

@@ -316,8 +316,8 @@ module Index
     t = Time.now
 
     @@roots = Rufus::Json.decode(File.read('data/roots.json'))
-    @@edict2 = File.readlines('data/edict2.json').collect(&:strip)
-    @@kanjidic = File.readlines('data/kanjidic.json').collect(&:strip)
+    @@edict2 = File.readlines('data/edict2.json').collect(&:chop)
+    @@kanjidic = File.readlines('data/kanjidic.json').collect(&:chop)
 
     puts "loaded the json files, took #{Time.now - t}s"
   end
