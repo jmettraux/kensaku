@@ -6,8 +6,8 @@ require 'compass'
 require_relative 'lib/parser.rb'
 
 $roots = {}
-#load_words
-#load_kanji
+load_words
+load_kanji
 sort_roots
 
 
@@ -54,7 +54,7 @@ get '/ip' do
 
   content_type 'text/plain'
 
-  [ request.ip, env['X-REAL-IP'] ].inspect
+  [ request.ip, env['HTTP_X_REAL_IP'] ].inspect
 end
 
 def white_ip?(ip)
@@ -74,7 +74,7 @@ post '/note/:u/:start/:line' do
 
   content_type 'application/json; charset=utf-8'
 
-  halt '[]' unless white_ip?(request.ip)
+  halt '[]' unless white_ip?(env['HTTP_X_REAL_IP'] || request.ip)
 
   u = params[:u]
 
