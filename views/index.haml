@@ -86,7 +86,10 @@
 
       $.ajax({
         url: '/query/' + q,
-        success: function(data) { displayResults(q, data); }
+        success: function(data) { displayResults(q, data); },
+        error: function(jqxhr, tstatus, err) {
+          console.log([ 'query err', tstatus, err ]);
+        }
       });
     });
 

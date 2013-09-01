@@ -3,8 +3,8 @@ require 'sinatra'
 require 'haml'
 require 'compass'
 
-#require_relative 'lib/parser.rb'
-#Index.load_roots
+require_relative 'lib/parser.rb'
+Index.load
 
 
 MAX = 77
@@ -38,13 +38,17 @@ end
 
 get '/query/:start' do
 
-  #results = ($roots[params[:start].downcase] || []).take(MAX)
-  results = Index.query(params[:start].downcase, MAX)
-
   content_type 'application/json; charset=utf-8'
   cache_control :public, max_age: 7 * 24 * 3600 # cache for 7d
 
-  Rufus::Json.encode(results.collect(&:to_h))
+  json_lines = Index.query(params[:start].downcase, MAX)
+
+  json_lines = json_lines.zip([ ',' ] * json_lines.length).flatten
+  json_lines.pop if json_lines.last == ','
+  json_lines.unshift('[')
+  json_lines.push(']')
+
+  json_lines
 end
 
 get '/ip' do

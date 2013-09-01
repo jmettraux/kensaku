@@ -316,20 +316,23 @@ module Index
     t = Time.now
 
     @@roots = Rufus::Json.decode(File.read('data/roots.json'))
-    @@edict2 = File.readlines('data/edict2.json')
-    @@kanjidic = File.readlines('data/kanjidic.json')
+    @@edict2 = File.readlines('data/edict2.json').collect(&:strip)
+    @@kanjidic = File.readlines('data/kanjidic.json').collect(&:strip)
 
     puts "loaded the json files, took #{Time.now - t}s"
   end
 
-  #def self.hentry(fline)
-  #  (@@entries[fline[0, 1]] || [])[fline[1..-1].to_i]
-  #end
-  #def self.query(start, max)
-  #  ($roots[start] || []).take(max).collect { |l| load_entry(l) }
-  #end
-end
+  def self.entry(fline)
 
-#Index.generate
-Index.load
+    dic = fline[0, 1]
+    line = fline[1..-1].to_i
+
+    (dic == 'k' ? @@kanjidic : @@edict2)[line]
+  end
+
+  def self.query(start, max)
+
+    (@@roots[start] || []).take(max).collect { |l| entry(l) }
+  end
+end
 
