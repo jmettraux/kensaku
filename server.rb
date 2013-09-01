@@ -64,7 +64,9 @@ def white_ip?(ip)
 
   begin; File.readlines('white_ips.txt'); rescue []; end.each do |line|
 
-    return true if ip.match(line.strip)
+    line = line.split('#').first.strip
+
+    return true if line.length > 0 && ip.match(line)
   end
 
   false
