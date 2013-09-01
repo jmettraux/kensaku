@@ -327,7 +327,8 @@ module Index
     dic = fline[0, 1]
     line = fline[1..-1].to_i
 
-    (dic == 'k' ? @@kanjidic : @@edict2)[line]
+    (dic == 'k' ? @@kanjidic : @@edict2)[line - 1]
+      # grr... off by 1... although I have dummy zero lines...
   end
 
   def self.query(start, max)
