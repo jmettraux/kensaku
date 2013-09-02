@@ -1,4 +1,5 @@
 
+#top
 #content
 
   #search
@@ -59,7 +60,9 @@
 
         if (#{params[:u] != nil}) {
 
-          var $add = e.span('.add', { 'data-ks-line': entry.li }, '♻').$;
+          var buttons = e.span('.buttons');
+          var $up = buttons.span('.up', '◮').$;
+          var $add = buttons.span('.add', { 'data-ks-line': entry.li }, '♻').$;
 
           $add.on('click', function(ev) {
             var $target = $(ev.target);
@@ -69,6 +72,9 @@
               method: 'POST',
               data: ''
             });
+          });
+          $up.on('click', function(ev) {
+            window.location.href = '#top';
           });
         }
       });

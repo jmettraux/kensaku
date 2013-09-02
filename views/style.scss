@@ -74,9 +74,19 @@ span.menu {
 .gloss {
   margin-top: 0.2em;
 }
-.add {
+.buttons {
   position: absolute;
   bottom: 0.5em;
   right: 0.5em;
+}
+.buttons > span {
+  margin-left: 0.7em;
+}
+.buttons .add {
+  font-size: 110%;
+}
+.buttons .up {
+  position: relative;
+  top: -3px;
 }
 
