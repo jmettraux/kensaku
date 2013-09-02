@@ -7,7 +7,7 @@ require_relative 'lib/index.rb'
 Index.load
 
 
-MAX = 77
+MAX = 98
 
 
 configure do
