@@ -81,12 +81,15 @@ span.menu {
   position: absolute;
   bottom: 0.5em;
   right: 0.5em;
+  //color: darkgray;
 }
 .buttons > span {
-  margin-left: 1.2em;
+  margin-left: 1.3em;
 }
+
 .buttons .add {
   font-size: 110%;
+  margin-right: 0.5em;
 }
 .buttons .add.clicked {
   color: gray;
@@ -97,8 +100,15 @@ span.menu {
 .buttons .add.error {
   color: red;
 }
+
 .buttons .up {
   position: relative;
   top: -3px;
+}
+
+.buttons .clear {
+  position: relative;
+  top: -2px;
+  font-size: 98%;
 }
 

@@ -24,6 +24,13 @@
     $query.attr('autocorrect', 'off');
     $query.attr('spellcheck', 'false');
 
+    var clear =
+      function(ev) {
+        $query.val('');
+        displayResults('', []);
+        $query.focus();
+      };
+
     var displayResults = function(query, results) {
 
       if (results === []) return;
@@ -61,6 +68,7 @@
         if (#{params[:u] != nil}) {
 
           var buttons = e.span('.buttons');
+          var $clear = buttons.span('.clear', '⊗').$;
           var $up = buttons.span('.up', '◮').$;
           var $add = buttons.span('.add', { 'data-ks-line': entry.li }, '♻').$;
 
@@ -78,6 +86,7 @@
           $up.on('click', function(ev) {
             window.location.href = '#top';
           });
+          $clear.on('click', clear);
         }
       });
     };
@@ -100,12 +109,7 @@
       });
     });
 
-    $('.clear').on('click', function(ev) {
-
-      $query.val('');
-      displayResults('', []);
-      $query.focus();
-    });
+    $('.clear').on('click', clear);
 
     window.setTimeout(function() {
       //window.scrollTo(0, 1);
