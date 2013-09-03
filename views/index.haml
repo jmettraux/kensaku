@@ -70,7 +70,9 @@
             $.ajax({
               url: '/note/#{params[:u]}/' + line,
               method: 'POST',
-              data: ''
+              data: '',
+              success: function() { $add.addClass('success'); },
+              error: function() { $add.addClass('error'); }
             });
           });
           $up.on('click', function(ev) {

@@ -86,6 +86,12 @@ span.menu {
 .buttons .add {
   font-size: 110%;
 }
+.buttons .add.success {
+  color: darkblue;
+}
+.buttons .add.error {
+  color: red;
+}
 .buttons .up {
   position: relative;
   top: -3px;
