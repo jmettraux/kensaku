@@ -30,8 +30,9 @@ span.clear {
   display: inline-block;
   font-size: 140%;
   font-weight: 100%;
-  margin-top: 3px;
   margin-left: 0.2em;
+  position: relative;
+  top: 3px;
 }
 span.menu {
   display: inline-block;
@@ -108,7 +109,7 @@ span.menu {
 
 .buttons .clear {
   position: relative;
-  top: -2px;
-  font-size: 98%;
+  top: -1px;
+  font-size: 96%;
 }
 
