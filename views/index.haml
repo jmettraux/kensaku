@@ -16,6 +16,7 @@
   Caboche.last(function() {
 
     var $query = $('#query');
+    var $clear = $('#search > span.clear');
     var $cols = $('#cols');
     var $results = $('#results');
 
@@ -93,6 +94,8 @@
 
     $query.on('keyup', function(ev) {
 
+      $clear.removeClass('error');
+
       var q = $.trim($query.val()).toLowerCase();
 
       if (q === '') {
@@ -102,9 +105,12 @@
 
       $.ajax({
         url: '/query/' + q,
-        success: function(data) { displayResults(q, data); },
+        success: function(data) {
+          displayResults(q, data);
+        },
         error: function(jqxhr, tstatus, err) {
-          console.log([ 'query err', tstatus, err ]);
+          //console.log([ 'query err', tstatus, err ]);
+          $clear.addClass('error');
         }
       });
     });
