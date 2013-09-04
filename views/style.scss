@@ -66,14 +66,23 @@ span.menu {
   padding: 0.3em;
   border-bottom: 1px solid white;
 }
+
 .ki {
+  display: inline-block;
+  vertical-align: top;
   font-size: 200%;
   width: 65%;
-  float: left;
 }
+//.kanji {
+//}
+
 .ka {
+  display: inline-block;
   font-size: 110%;
 }
+//.kana {
+//}
+
 .gs {
   margin-top: 0.1em;
   clear: both;
