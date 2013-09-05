@@ -91,35 +91,9 @@ span.menu {
   margin-top: 0.2em;
 }
 
-.buttons {
+.added {
   position: absolute;
+  right: 1em;
   bottom: 0.5em;
-  right: 0.5em;
-  //color: darkgray;
-}
-.buttons > span {
-  margin-left: 1.3em;
-}
-
-.buttons .add {
-  font-size: 110%;
-  margin-right: 0.5em;
-}
-.buttons .add.clicked {
-  color: gray;
-}
-.buttons .add.success {
-  color: darkblue;
-}
-
-.buttons .up {
-  position: relative;
-  top: -3px;
-}
-
-.buttons .clear {
-  position: relative;
-  top: -1px;
-  font-size: 96%;
 }
 

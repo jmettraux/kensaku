@@ -11,6 +11,8 @@
 
   #results
 
+#bottom
+
 :javascript
 
   Caboche.last(function() {
@@ -50,11 +52,14 @@
         });
       });
 
+      var previousEvent = undefined;
+
       Nu.each(results, function(entry) {
 
         var e = Fb.c($results, '#' + entry.li + '.entry');
+        var $e = e.$;
 
-        $(e).attr('data-ks-query', query);
+        $e.attr('data-ks-query', query);
 
         var ki = e.div('.ki');
         var ka = e.div('.ka');
@@ -66,29 +71,47 @@
 
         gs.div('.gloss', entry.li.toString());
 
-        if (#{params[:u] != nil}) {
+        $e.on('click', function(ev) {
 
-          var buttons = e.span('.buttons');
-          var $clear = buttons.span('.clear', '⊗').$;
-          var $up = buttons.span('.up', '◮').$;
-          var $add = buttons.span('.add', { 'data-ks-line': entry.li }, '♻').$;
+          var pev = previousEvent;
 
-          $add.on('click', function(ev) {
-            $add.addClass('clicked');
-            var line = $add.attr('data-ks-line');
+          if ( ! pev || ev.timeStamp - pev.timeStamp > 1000) {
+            previousEvent = ev;
+            return;
+          }
+
+          //console.log([ 'x', pev.screenX, ev.screenX ]);
+          //console.log([ 'y', pev.screenY, ev.screenY ]);
+
+          if (pev.screenY < ev.screenY - 200) {
+            window.location.href = '#bottom';
+            return;
+          }
+          if (pev.screenY > ev.screenY + 200) {
+            window.location.href = '#top';
+            return;
+          }
+
+          if (pev.target === ev.target && pev.screenX > ev.screenX + 110) {
+            clear();
+            return;
+          }
+
+          if (
+            #{params[:u] != nil} &&
+            pev.target === ev.target &&
+            ev.screenX > pev.screenX + 110
+          ) {
+            var line = "123";
             $.ajax({
-              url: '/note/#{params[:u]}/' + line,
+              url: '/note/#{params[:u]}/' + entry.li,
               method: 'POST',
               data: '',
-              success: function() { $add.addClass('success'); },
-              error: function() { $add.addClass('error'); }
+              success: function() { e.div('.added', '⚆'); },
+              error: function() { e.div('.added.error', '⚆'); }
             });
-          });
-          $up.on('click', function(ev) {
-            window.location.href = '#top';
-          });
-          $clear.on('click', clear);
-        }
+          }
+        });
       });
     };
 
