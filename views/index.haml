@@ -27,6 +27,8 @@
     $query.attr('autocorrect', 'off');
     $query.attr('spellcheck', 'false');
 
+    var previousEvent = undefined;
+
     var clear =
       function(ev) {
         $query.val('');
@@ -52,8 +54,6 @@
         });
       });
 
-      var previousEvent = undefined;
-
       Nu.each(results, function(entry) {
 
         var e = Fb.c($results, '#' + entry.li + '.entry');
@@ -73,35 +73,36 @@
 
         $e.on('click', function(ev) {
 
-          var pev = previousEvent;
+          var pev = previousEvent || { timeStamp: 0, screenX: 0, screenY: 0 };
 
-          if ( ! pev || ev.timeStamp - pev.timeStamp > 1000) {
+          var deltaX = ev.screenX - pev.screenX;
+          var deltaY = ev.screenY - pev.screenY;
+          var pta = $(pev.target).closest('.entry')[0];
+          var ta = $(ev.target).closest('.entry')[0];
+
+          //e.div('.log', JSON.stringify([ 'x', deltaX ]));
+          //e.div('.log', JSON.stringify([ 'y', deltaY ]));
+
+          if (
+            ev.timeStamp - pev.timeStamp > 2800 ||
+            Math.abs(deltaX) >= window.screen.width ||
+            Math.abs(deltaY) >= window.screen.height
+          ) {
+            //e.div('.log', 'stashed0');
             previousEvent = ev;
             return;
           }
 
-          //console.log([ 'x', pev.screenX, ev.screenX ]);
-          //console.log([ 'y', pev.screenY, ev.screenY ]);
-
-          if (pev.screenY < ev.screenY - 200) {
+          if (deltaY > 100) {
             window.location.href = '#bottom';
-            return;
           }
-          if (pev.screenY > ev.screenY + 200) {
+          else if (deltaY < -150) {
             window.location.href = '#top';
-            return;
           }
-
-          if (pev.target === ev.target && pev.screenX > ev.screenX + 110) {
+          else if (pta === ta && deltaX < -70) {
             clear();
-            return;
           }
-
-          if (
-            #{params[:u] != nil} &&
-            pev.target === ev.target &&
-            ev.screenX > pev.screenX + 110
-          ) {
+          else if (#{params[:u] != nil} && pta === ta && deltaX > 70) {
             var line = "123";
             $.ajax({
               url: '/note/#{params[:u]}/' + entry.li,
@@ -110,6 +111,10 @@
               success: function() { e.div('.added', '⚆'); },
               error: function() { e.div('.added.error', '⚆'); }
             });
+          }
+          else {
+            //e.div('.log', 'stashed1');
+            previousEvent = ev;
           }
         });
       });
