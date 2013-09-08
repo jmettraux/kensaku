@@ -75,7 +75,7 @@ def white_ip?(ip)
   false
 end
 
-post '/note/:u/:line' do
+post '/note/:u/:id' do
 
   content_type 'application/json; charset=utf-8'
 
@@ -86,8 +86,10 @@ post '/note/:u/:line' do
   halt '[]' if u.nil?
   halt '[]' unless u.match(/^[a-z0-9]+$/)
 
-  if entry = Index.entry(params[:line].downcase)
-    File.open("notes/#{u}.json", 'ab') { |f| f.puts(entry) }
+  id = params[:id]
+
+  if entry = Index.entry(id)
+    File.open("notes/#{u}.json", 'ab') { |f| f.puts(id) }
   end
 
   '[]'
