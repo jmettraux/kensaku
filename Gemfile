@@ -11,3 +11,5 @@ gem 'compass'
 
 gem 'mojinizer'
 
+gem 'rake'
+

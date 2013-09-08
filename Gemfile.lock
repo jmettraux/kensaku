@@ -17,6 +17,7 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
+    rake (10.0.4)
     rufus-json (1.0.5)
     sass (3.2.10)
     sinatra (1.4.3)
@@ -37,6 +38,7 @@ DEPENDENCIES
   compass
   haml
   mojinizer
+  rake
   rufus-json
   sinatra
   thin
