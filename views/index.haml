@@ -50,13 +50,13 @@
         cols = cols + 1;
         var $col = Fb.c($cols, '.col', entry.ki[0]).$;
         $col.on('click', function(ev) {
-          window.location.href = '#' + entry.li;
+          window.location.href = '#' + entry.id;
         });
       });
 
       Nu.each(results, function(entry) {
 
-        var e = Fb.c($results, '#' + entry.li + '.entry');
+        var e = Fb.c($results, '#' + entry.id + '.entry');
         var $e = e.$;
 
         $e.attr('data-ks-query', query);
@@ -69,7 +69,7 @@
         var gs = e.div('.gs')
         Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
 
-        gs.div('.gloss', entry.li.toString());
+        gs.div('.gloss', entry.id);
 
         $e.on('click', function(ev) {
 
@@ -103,9 +103,8 @@
             clear();
           }
           else if (#{params[:u] != nil} && pta === ta && deltaX > 70) {
-            var line = "123";
             $.ajax({
-              url: '/note/#{params[:u]}/' + entry.li,
+              url: '/note/#{params[:u]}/' + entry.id,
               method: 'POST',
               data: '',
               success: function() { e.div('.added', '⚆'); },

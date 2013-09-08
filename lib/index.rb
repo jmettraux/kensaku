@@ -30,20 +30,29 @@ require 'mojinizer'
 
 class Entry
 
-  attr_accessor :line, :kanji, :kana, :romaji, :split_romaji, :glosses
+  attr_accessor :id, :kanji, :kana, :romaji, :split_romaji, :glosses
 
-  R = /^([^;\s]+)(?:;([^:\s]+))* (?:\[([^;\s]+)(?:;([^:\s]+))*\] )?\/(.+)\/$/
-  ENTL = /^EntL\d+X?$/
+  R_E = /^([^;\s]+)(?:;([^:\s]+))* (?:\[([^;\s]+)(?:;([^:\s]+))*\] )?\/(.+)\/$/
+  R_ENTL = /^EntL(\d+)X?$/
+  R_UNICODE = /^U[0-9a-f]+$/
   VOWELS = %w[ a e i o u ]
   CIRCLES = %w[ ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ]
 
-  def self.parse_edict2_entry(line, s)
+  def self.parse(s)
+
+    return nil if s.match(/^　？？？/) # copyright
+    return nil if s.match(/^#/) # copyright
+
+    if m = R_E.match(s)
+      parse_edict2_entry(m, s)
+    else
+      parse_kanjidic_entry(s)
+    end
+  end
+
+  def self.parse_edict2_entry(m, s)
 
     e = Entry.new
-
-    e.line = "e#{line}"
-
-    m = R.match(s)
 
     e.kanji = [ m[1], *(m[2] ? m[2].split(';') : []) ]
     e.kanji = e.kanji.collect { |k| k.split('(').first }.uniq
@@ -54,10 +63,21 @@ class Entry
     e.romaji = filter_romaji(e.kana.empty? ? e.kanji : e.kana)
     e.split_romaji = e.romaji.collect { |r| split_romaji(r) }
 
-    e.glosses =
-      m[5].split('/').reject { |g|
+    m5 = m[5].split('/')
 
-        g == '(P)' || ENTL.match(g)
+    e.id =
+      m5.collect { |g|
+        if m = R_ENTL.match(g)
+          "E#{m[1]}"
+        else
+          nil
+        end
+      }.compact.first
+
+    e.glosses =
+      m5.reject { |g|
+
+        g == '(P)' || R_ENTL.match(g)
 
       }.inject([]) { |a, gs|
 
@@ -81,7 +101,7 @@ class Entry
     e
   end
 
-  def self.parse_kanjidic_entry(line, s)
+  def self.parse_kanjidic_entry(s)
 
     i = s.index('{')
     head = s[0..i - 2]
@@ -91,7 +111,7 @@ class Entry
 
     e = Entry.new
 
-    e.line = "k#{line}"
+    e.id = ss.find { |str| str.match(R_UNICODE) }
     e.kanji = [ ss.shift ]
     e.glosses = []
     e.glosses << ss.select { |str| ! str.chars.first.kana? }.join(' ')
@@ -113,11 +133,10 @@ class Entry
   def to_h
 
     {
-      'li' => @line,
+      'id' => @id,
       'ki' => @kanji,
       'ka' => @kana,
       'ro' => @romaji,
-      #'sr' => @split_romaji,
       'gs' => @glosses
     }
   end
@@ -129,12 +148,17 @@ class Entry
 
   def hash
 
-    @line.hash
+    @id.hash
   end
 
   def eql?(o)
 
     o.is_a?(Entry) && o.hash == self.hash
+  end
+
+  def type
+
+    @id[0, 1] == 'U' ? 'k' : 'e'
   end
 
   protected
@@ -190,8 +214,6 @@ module Index
 
   def self.index_entry(e)
 
-    @@entries[e.line[0, 1]] << e
-
     e.split_romaji.each do |sr|
 
       s = sr.shift
@@ -204,48 +226,34 @@ module Index
     end
   end
 
-  def self.load_words
-
-    puts "data/edict2.txt"
+  def self.translate_file(source, destination)
 
     t = Time.now
     count = 0
 
-    File.readlines('data/edict2.txt').each_with_index do |s, l|
+    puts "translating from #{source} to #{destination}..."
 
-      next if s.match(/^　？？？/) # copyright
+    FileUtils.rm_f(destination)
 
-      index_entry(Entry.parse_edict2_entry(l + 1, s))
-
-      count = l + 1
+    File.open(destination, 'ab') do |f|
+      File.readlines(source).each do |s|
+        e = Entry.parse(s)
+        next if e == nil
+        count = count + 1
+        index_entry(e)
+        f.puts(e.to_json)
+        print '.' if count % 500 == 0
+      end
     end
 
-    puts "data/edict2.txt  loaded #{count} entries, took #{Time.now - t}s"
-  end
-
-  def self.load_kanji
-
-    puts "data/kanjidic.txt"
-
-    t = Time.now
-    count = 0
-
-    File.readlines('data/kanjidic.txt').each_with_index do |s, l|
-
-      next if s.match(/^#/) # copyright
-
-      index_entry(Entry.parse_kanjidic_entry(l + 1, s))
-
-      count = l + 1
-    end
-
-    puts "data/kanjidic.txt  loaded #{count} entries, took #{Time.now - t}s"
+    puts "\ntranslated #{count} items, took #{Time.now - t}s"
   end
 
   def self.sort_roots
 
     t = Time.now
 
+    puts "sorting roots..."
     puts "#{@@roots.size} roots"
     count = @@roots.values.inject(0) { |count, entries| count + entries.size }
     puts "#{count} entry references"
@@ -258,7 +266,7 @@ module Index
         @@roots[k].uniq.sort_by { |e|
           e.romaji.find { |ro| ro.match(q) }
         }.collect { |e|
-          e.line
+          e.id
         }
     end
 
@@ -267,7 +275,7 @@ module Index
     puts "took #{Time.now - t}s"
   end
 
-  def self.write
+  def self.write_roots
 
     t = Time.now
 
@@ -276,59 +284,61 @@ module Index
     end
 
     puts "wrote data/roots.json, took #{Time.now - t}s"
-
-    t = Time.now
-
-    File.open('data/edict2.json', 'wb') do |f|
-      @@entries['e'].each do |entry|
-        f.puts(entry.to_json)
-      end
-    end
-
-    puts "wrote data/edict2.json, took #{Time.now - t}s"
-
-    t = Time.now
-
-    File.open('data/kanjidic.json', 'wb') do |f|
-      @@entries['k'].each do |entry|
-        f.puts(entry.to_json)
-      end
-    end
-
-    puts "wrote data/kanjidic.json, took #{Time.now - t}s"
   end
 
   def self.generate
 
     @@roots = {}
-    @@entries = { 'k' => [ Entry.new ], 'e' => [ Entry.new ] }
-      # the two blank entries are the zero lines
 
-    load_words
-    load_kanji
+    translate_file('data/edict2.txt', 'data/edict2.json')
+    translate_file('data/kanjidic.txt', 'data/kanjidic.json')
 
     sort_roots
-    write
+    write_roots
+  end
+
+  R_ID = /^{\"id\":\"([a-zA-Z0-9]+)\"/
+
+  def self.load_file(fname)
+
+    t = Time.now
+
+    puts "loading #{fname}..."
+
+    File.readlines(fname).each do |line|
+      id = line.match(R_ID)[1]
+      @@index[id] = line.chop
+    end
+
+    puts "loaded #{fname}, took #{Time.now - t}s"
+  end
+
+  def self.load_roots
+
+    fname = 'data/roots.json'
+
+    t = Time.now
+
+    puts "loading #{fname}..."
+
+    @@roots = Rufus::Json.decode(File.read(fname))
+
+    puts "loaded #{fname}, took #{Time.now - t}s"
   end
 
   def self.load
 
-    t = Time.now
+    @@index = {}
 
-    @@roots = Rufus::Json.decode(File.read('data/roots.json'))
-    @@edict2 = File.readlines('data/edict2.json').collect(&:chop)
-    @@kanjidic = File.readlines('data/kanjidic.json').collect(&:chop)
+    load_file('data/edict2.json')
+    load_file('data/kanjidic.json')
 
-    puts "loaded the json files, took #{Time.now - t}s"
+    load_roots
   end
 
-  def self.entry(fline)
+  def self.entry(id)
 
-    dic = fline[0, 1]
-    line = fline[1..-1].to_i
-
-    (dic == 'k' ? @@kanjidic : @@edict2)[line - 1]
-      # grr... off by 1... although I have dummy zero lines...
+    @@index[id]
   end
 
   def self.query(start, max)
