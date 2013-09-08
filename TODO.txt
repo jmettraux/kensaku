@@ -1,0 +1,4 @@
+
+[ ] change index, use EntL1234 (edict2) and U12FF (kanjidic)
+[ ] show bookmarked entries
+
