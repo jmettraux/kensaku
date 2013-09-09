@@ -60,7 +60,7 @@ get '/ip' do
   [ request.ip, env['HTTP_X_REAL_IP'] ].inspect
 end
 
-def white_ip?(ip)
+def whitelisted_ip?(ip)
 
   return true if ip == '127.0.0.1'
   return true if ip == '::1'
@@ -72,6 +72,8 @@ def white_ip?(ip)
     return true if line.length > 0 && ip.match(line)
   end
 
+  puts "not whitelisted #{ip}"
+
   false
 end
 
@@ -79,7 +81,10 @@ post '/note/:u/:id' do
 
   content_type 'application/json; charset=utf-8'
 
-  halt '[]' unless white_ip?(env['HTTP_X_REAL_IP'] || request.ip)
+  unless whitelisted_ip?(env['HTTP_X_REAL_IP'] || request.ip)
+    status 403
+    halt ''
+  end
 
   u = params[:u]
 
