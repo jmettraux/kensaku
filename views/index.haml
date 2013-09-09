@@ -43,24 +43,34 @@
       $cols.empty();
       $results.empty();
 
+      //try {
+
       var cols = 0;
       Nu.each(results, function(entry) {
         if (cols === 7) return;
         if (entry.ki.length < 1) return;
         cols = cols + 1;
         var col = Fb.c($cols, '.col', entry.ki[0]);
-        if (entry.id.match(/^U/)) col.span('.k', 'ⓚ');
+        if (entry.id && entry.id.match(/^U/)) col.span('.k', 'ⓚ');
         $(col).on('click', function(ev) {
           window.location.href = '#' + entry.id;
         });
       });
+
+      //}
+      //catch(err) {
+      //  var derr = Fb.c($results, '.entry.error');
+      //  derr.div('message: ' + err.message);
+      //  derr.div('line: ' + err.line);
+      //  derr.div('stack:<br/>' + err.stack);
+      //}
 
       Nu.each(results, function(entry) {
 
         var e = Fb.c($results, '#' + entry.id + '.entry');
         var $e = e.$;
 
-        var isKanji = !! entry.id.match(/^U/);
+        var isKanji = entry.id && entry.id.match(/^U/);
 
         $e.attr('data-ks-query', query);
 
