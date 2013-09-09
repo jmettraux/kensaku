@@ -48,8 +48,9 @@
         if (cols === 7) return;
         if (entry.ki.length < 1) return;
         cols = cols + 1;
-        var $col = Fb.c($cols, '.col', entry.ki[0]).$;
-        $col.on('click', function(ev) {
+        var col = Fb.c($cols, '.col', entry.ki[0]);
+        if (entry.id.match(/^U/)) col.span('.k', 'ⓚ');
+        $(col).on('click', function(ev) {
           window.location.href = '#' + entry.id;
         });
       });
@@ -59,12 +60,16 @@
         var e = Fb.c($results, '#' + entry.id + '.entry');
         var $e = e.$;
 
+        var isKanji = !! entry.id.match(/^U/);
+
         $e.attr('data-ks-query', query);
 
         var ki = e.div('.ki');
         var ka = e.div('.ka');
         Nu.each(entry.ki, function(kanji) { ki.div('.kanji', kanji); });
         Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
+
+        if (isKanji) ki.$.addClass('kanji-entry');
 
         var gs = e.div('.gs')
         Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });

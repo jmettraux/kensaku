@@ -61,6 +61,11 @@ span.menu {
   clear: both;
 }
 
+.k { // kanji mark
+  font-size: 97%;
+  opacity: 0.5;
+}
+
 .entry {
   position: relative;
   padding: 0.3em;
@@ -75,6 +80,9 @@ span.menu {
 }
 //.kanji {
 //}
+.kanji-entry {
+  font-size: 700%;
+}
 
 .ka {
   display: inline-block;
