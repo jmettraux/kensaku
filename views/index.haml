@@ -129,8 +129,13 @@
               url: '/mark/' + u + '/' + entry.id,
               method: 'POST',
               data: '',
-              success: function() { e.div('.added', '⚆'); },
-              error: function() { e.div('.added.error', '⚆'); }
+              success: function() {
+                marks.push(entry.id);
+                e.div('.added', '⚆');
+              },
+              error: function() {
+                e.div('.added.error', '⚆');
+              }
             });
           }
           else {
