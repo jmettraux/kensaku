@@ -3,12 +3,20 @@ require 'sinatra'
 require 'haml'
 require 'compass'
 
+
+#
+# kensaku index loading
+#
+
 require_relative 'lib/index.rb'
 Index.load
 
-
 MAX = 98
 
+
+#
+# sinatra configuration
+#
 
 configure do
 
@@ -27,6 +35,27 @@ use(
 #use(
 #  Rack::MethodOverride)
 
+
+#
+# helpers
+#
+
+helpers do
+
+  def param_u
+
+    if u = params[:u]
+      u.inspect
+    else
+      'undefined'
+    end
+  end
+end
+
+
+#
+# routes
+#
 
 get '/style.css' do
 
@@ -77,7 +106,7 @@ def whitelisted_ip?(ip)
   false
 end
 
-post '/note/:u/:id' do
+post '/mark/:u/:id' do
 
   content_type 'application/json; charset=utf-8'
 
@@ -94,9 +123,17 @@ post '/note/:u/:id' do
   id = params[:id]
 
   if entry = Index.entry(id)
-    File.open("notes/#{u}.json", 'ab') { |f| f.puts(id) }
+    File.open("marks/#{u}.json", 'ab') { |f| f.puts(id) }
   end
 
   '[]'
+end
+
+get '/marks/:u' do
+
+  marks = begin; File.readlines("marks/#{params[:u]}.json"); rescue []; end
+  marks = marks.collect { |m| m.strip.inspect }.join(',')
+
+  [ 'var marks = [', marks, '];' ]
 end
 

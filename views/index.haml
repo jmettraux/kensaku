@@ -15,6 +15,10 @@
 
 :javascript
 
+  var u = #{param_u};
+
+  Caboche.phase(0, 'marks/' + u);
+
   Caboche.last(function() {
 
     var $query = $('#query');
@@ -86,6 +90,8 @@
 
         gs.div('.gloss', entry.id);
 
+        if (marks.indexOf(entry.id) > -1) e.div('.added', '⚆');
+
         $e.on('click', function(ev) {
 
           var pev = previousEvent || { timeStamp: 0, screenX: 0, screenY: 0 };
@@ -117,9 +123,10 @@
           else if (pta === ta && deltaX < -70) {
             clear();
           }
-          else if (#{params[:u] != nil} && pta === ta && deltaX > 70) {
+          else if (u && pta === ta && deltaX > 70) {
+            $e.find('.added').remove();
             $.ajax({
-              url: '/note/#{params[:u]}/' + entry.id,
+              url: '/mark/' + u + '/' + entry.id,
               method: 'POST',
               data: '',
               success: function() { e.div('.added', '⚆'); },
