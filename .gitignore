@@ -1,3 +1,3 @@
 .sass-cache/
 notes/*.json
-white_ips.txt
+ip_whitelist.txt

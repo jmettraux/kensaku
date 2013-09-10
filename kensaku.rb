@@ -65,7 +65,7 @@ def whitelisted_ip?(ip)
   return true if ip == '127.0.0.1'
   return true if ip == '::1'
 
-  begin; File.readlines('white_ips.txt'); rescue []; end.each do |line|
+  begin; File.readlines('ip_whitelist.txt'); rescue []; end.each do |line|
 
     line = line.split('#').first.strip
 
