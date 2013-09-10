@@ -101,7 +101,7 @@ def whitelisted_ip?(ip)
     return true if line.length > 0 && ip.match(line)
   end
 
-  puts "not whitelisted #{ip}"
+  puts "not whitelisted #{ip}"; $stdout.flush
 
   false
 end
