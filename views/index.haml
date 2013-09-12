@@ -59,7 +59,10 @@
       var jiClick = function(ev) {
         var $target = $(ev.target);
         var code = 'U' + $target.text().charCodeAt(0).toString(16);
-        if ($('#' + code).length > 0) return;
+        if ($('#' + code).length > 0) {
+          window.location.href = '#' + code;
+          return;
+        }
         $.ajax({
           url: '/ji/' + code,
           success: function(data) {
