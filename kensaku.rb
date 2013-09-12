@@ -70,7 +70,7 @@ end
 get '/query/:start' do
 
   content_type 'application/json; charset=utf-8'
-  cache_control :public, max_age: 7 * 24 * 3600 # cache for 7d
+  cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
 
   json_lines = Index.query(params[:start].downcase, MAX)
 
@@ -80,6 +80,14 @@ get '/query/:start' do
   json_lines.push(']')
 
   json_lines
+end
+
+get '/ji/:code' do
+
+  content_type 'application/json; charset=utf-8'
+  cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
+
+  Index.ji(params[:code])
 end
 
 get '/ip' do

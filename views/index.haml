@@ -40,6 +40,106 @@
         $query.focus();
       };
 
+    var displayEntry = function(entry, i) {
+
+      var e;
+
+      if ((typeof i) === 'object') e = Fb.a(i, '#' + entry.id + '.entry');
+      else e = Fb.c($results, '#' + entry.id + '.entry');
+
+      var $e = e.$;
+
+      var isKanji = entry.id && entry.id.match(/^U/);
+
+      $e.attr('data-ks-query', query);
+
+      var ki = e.div('.ki');
+      var ka = e.div('.ka');
+
+      var jiClick = function(ev) {
+        var $target = $(ev.target);
+        var code = 'U' + $target.text().charCodeAt(0).toString(16);
+        if ($('#' + code).length > 0) return;
+        $.ajax({
+          url: '/ji/' + code,
+          success: function(data) {
+            displayEntry(data, $target.closest('.entry'));
+          }
+        });
+      };
+
+      Nu.each(entry.ki, function(kanji) {
+        var kan = ki.div('.kanji');
+        for (var i in kanji) {
+          var $c = kan.span(kanji.charAt(i)).$;
+          $c.on('click', jiClick);
+        }
+      });
+
+      Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
+
+      if (isKanji) ki.$.addClass('kanji-entry');
+
+      var gs = e.div('.gs')
+      Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
+
+      gs.div('.gloss', entry.id);
+
+      if (marks.indexOf(entry.id) > -1) e.div('.added', '⚆');
+
+      $e.on('click', function(ev) {
+
+        var pev = previousEvent || { timeStamp: 0, screenX: 0, screenY: 0 };
+
+        var deltaX = ev.screenX - pev.screenX;
+        var deltaY = ev.screenY - pev.screenY;
+        var pta = $(pev.target).closest('.entry')[0];
+        var ta = $(ev.target).closest('.entry')[0];
+
+        //e.div('.log', JSON.stringify([ 'x', deltaX ]));
+        //e.div('.log', JSON.stringify([ 'y', deltaY ]));
+
+        if (
+          ev.timeStamp - pev.timeStamp > 2800 ||
+          Math.abs(deltaX) >= window.screen.width ||
+          Math.abs(deltaY) >= window.screen.height
+        ) {
+          //e.div('.log', 'stashed0');
+          previousEvent = ev;
+          return;
+        }
+
+        if (deltaY > 100) {
+          window.location.href = '#bottom';
+        }
+        else if (deltaY < -150) {
+          window.location.href = '#top';
+        }
+        else if (pta === ta && deltaX < -70) {
+          clear();
+        }
+        else if (u && pta === ta && deltaX > 70) {
+          $e.find('.added').remove();
+          $.ajax({
+            url: '/mark/' + u + '/' + entry.id,
+            method: 'POST',
+            data: '',
+            success: function() {
+              marks.push(entry.id);
+              e.div('.added', '⚆');
+            },
+            error: function() {
+              e.div('.added.error', '⚆');
+            }
+          });
+        }
+        else {
+          //e.div('.log', 'stashed1');
+          previousEvent = ev;
+        }
+      });
+    };
+
     var displayResults = function(query, results) {
 
       if (results === []) return;
@@ -69,81 +169,7 @@
       //  derr.div('stack:<br/>' + err.stack);
       //}
 
-      Nu.each(results, function(entry) {
-
-        var e = Fb.c($results, '#' + entry.id + '.entry');
-        var $e = e.$;
-
-        var isKanji = entry.id && entry.id.match(/^U/);
-
-        $e.attr('data-ks-query', query);
-
-        var ki = e.div('.ki');
-        var ka = e.div('.ka');
-        Nu.each(entry.ki, function(kanji) { ki.div('.kanji', kanji); });
-        Nu.each(entry.ka, function(kana) { ka.div('.kana', kana); });
-
-        if (isKanji) ki.$.addClass('kanji-entry');
-
-        var gs = e.div('.gs')
-        Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
-
-        gs.div('.gloss', entry.id);
-
-        if (marks.indexOf(entry.id) > -1) e.div('.added', '⚆');
-
-        $e.on('click', function(ev) {
-
-          var pev = previousEvent || { timeStamp: 0, screenX: 0, screenY: 0 };
-
-          var deltaX = ev.screenX - pev.screenX;
-          var deltaY = ev.screenY - pev.screenY;
-          var pta = $(pev.target).closest('.entry')[0];
-          var ta = $(ev.target).closest('.entry')[0];
-
-          //e.div('.log', JSON.stringify([ 'x', deltaX ]));
-          //e.div('.log', JSON.stringify([ 'y', deltaY ]));
-
-          if (
-            ev.timeStamp - pev.timeStamp > 2800 ||
-            Math.abs(deltaX) >= window.screen.width ||
-            Math.abs(deltaY) >= window.screen.height
-          ) {
-            //e.div('.log', 'stashed0');
-            previousEvent = ev;
-            return;
-          }
-
-          if (deltaY > 100) {
-            window.location.href = '#bottom';
-          }
-          else if (deltaY < -150) {
-            window.location.href = '#top';
-          }
-          else if (pta === ta && deltaX < -70) {
-            clear();
-          }
-          else if (u && pta === ta && deltaX > 70) {
-            $e.find('.added').remove();
-            $.ajax({
-              url: '/mark/' + u + '/' + entry.id,
-              method: 'POST',
-              data: '',
-              success: function() {
-                marks.push(entry.id);
-                e.div('.added', '⚆');
-              },
-              error: function() {
-                e.div('.added.error', '⚆');
-              }
-            });
-          }
-          else {
-            //e.div('.log', 'stashed1');
-            previousEvent = ev;
-          }
-        });
-      });
+      Nu.each(results, displayEntry);
     };
 
     $query.on('keyup', function(ev) {

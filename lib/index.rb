@@ -345,5 +345,10 @@ module Index
 
     (@@roots[start] || []).take(max).collect { |l| entry(l) }
   end
+
+  def self.ji(id)
+
+    @@index[id]
+  end
 end
 
