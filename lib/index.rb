@@ -341,6 +341,11 @@ module Index
     @@index[id]
   end
 
+  def self.kanji_keys
+
+    @@index.keys.select { |k| k[0, 1] == 'U' }
+  end
+
   def self.query(start, max)
 
     (@@roots[start] || []).take(max).collect { |l| entry(l) }
