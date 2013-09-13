@@ -30,6 +30,9 @@ Index.load
 
 module Krad
 
+  NON_DISPLAYABLE_RADICALS =
+    %w[ R201a2 R2e85 R2e8c R2eb9 R2ebe R2ecf R2ed6 Rfa66 ]
+
   def self.load
 
     kans = {}
@@ -41,9 +44,12 @@ module Krad
       next if line == '' || line.match(/^#/)
 
       radicals = line.split(/[: ]+/)
+
       kanji = radicals.shift
       kcode = "U#{kanji.ord.to_s(16)}"
+
       rcodes = radicals.collect { |r| "R#{r.ord.to_s(16)}" }
+      rcodes = rcodes - NON_DISPLAYABLE_RADICALS
 
       next unless Index.ji(kcode)
 
