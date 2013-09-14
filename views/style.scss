@@ -77,6 +77,8 @@ span.menu {
   vertical-align: top;
   font-size: 200%;
   width: 65%;
+  //max-width: 280px;
+  word-wrap: break-word;
 }
 //.kanji {
 //}
@@ -87,6 +89,7 @@ span.menu {
 .ka {
   display: inline-block;
   font-size: 110%;
+  //word-wrap: break-word;
 }
 //.kana {
 //}
