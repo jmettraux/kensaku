@@ -232,6 +232,7 @@ module Index
         n = sr.shift
         break unless n
         s = s + n
+        break if s.length > 14 # don't index too much 'puroguramase...'
       end
     end
   end
