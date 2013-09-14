@@ -72,7 +72,7 @@ get '/query/:start' do
   content_type 'application/json; charset=utf-8'
   cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
 
-  json_lines = Index.query(params[:start].downcase, MAX)
+  json_lines = Index.query(params[:start].romaji.downcase, MAX)
 
   json_lines = json_lines.zip([ ',' ] * json_lines.length).flatten
   json_lines.pop if json_lines.last == ','
