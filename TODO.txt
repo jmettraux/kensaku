@@ -2,3 +2,5 @@
 [o] change index, use EntL1234 (edict2) and U12FF (kanjidic)
 [o] show bookmarked entries
 
+[ ] don't index root if length > 12 or 14
+

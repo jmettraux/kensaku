@@ -30,7 +30,7 @@ require 'mojinizer'
 
 class Entry
 
-  attr_accessor :id, :kanji, :kana, :romaji, :split_romaji, :glosses
+  attr_accessor :id, :kanji, :kana, :romaji, :split_romaji, :glosses, :children
 
   R_E = /^([^;\s]+)(?:;([^:\s]+))* (?:\[([^;\s]+)(?:;([^:\s]+))*\] )?\/(.+)\/$/
   R_ENTL = /^EntL(\d+)X?$/
@@ -131,13 +131,17 @@ class Entry
 
   def to_h
 
-    {
-      'id' => @id,
-      'ki' => @kanji,
-      'ka' => @kana,
-      'ro' => @romaji,
-      'gs' => @glosses
-    }
+    h =
+      {
+        'id' => @id,
+        'ki' => @kanji,
+        'ka' => @kana,
+        'ro' => @romaji,
+        'gs' => @glosses
+      }
+    h['cn'] = @children if @children
+
+    h
   end
 
   def to_json
@@ -158,6 +162,11 @@ class Entry
   def type
 
     @id[0, 1] == 'U' ? 'k' : 'e'
+  end
+
+  def kanji?
+
+    type == 'k'
   end
 
   protected
@@ -213,6 +222,8 @@ module Index
 
   def self.index_entry(e)
 
+    @@kanji[e.id] = e if e.kanji?
+
     e.split_romaji.each do |sr|
 
       s = sr.shift
@@ -248,6 +259,42 @@ module Index
     puts "\ntranslated #{count} items, took #{Time.now - t}s"
   end
 
+  def self.read_krad_file(fname)
+
+    non_displayable_radicals =
+      %w[ R201a2 R2e85 R2e8c R2eb9 R2ebe R2ecf R2ed6 Rfa66 ]
+
+    count = 0
+
+    File.readlines(fname).each do |line|
+
+      line = line.strip
+      next if line == '' || line.match(/^#/)
+
+      radicals = line.split(/[: ]+/)
+
+      kanji = radicals.shift
+      kcode = "U#{kanji.ord.to_s(16)}"
+
+      rcodes = radicals.collect { |r| "R#{r.ord.to_s(16)}" }
+      rcodes = rcodes - non_displayable_radicals
+
+      entry = @@kanji[kcode]
+
+      next unless entry
+
+      count = count + 1
+
+      (entry.children ||= []) << rcodes
+
+      rcodes.each do |rcode|
+        (@@radicals[rcode] ||= []) << kcode
+      end
+    end
+
+    puts "#{count} kanji, #{@@radicals.size} radicals"
+  end
+
   def self.sort_roots
 
     t = Time.now
@@ -274,26 +321,30 @@ module Index
     puts "took #{Time.now - t}s"
   end
 
-  def self.write_roots
+  def self.write(data, fname)
 
     t = Time.now
 
-    File.open('data/roots.json', 'wb') do |f|
-      f.puts(Rufus::Json.dump(@@roots))
+    File.open(fname, 'wb') do |f|
+      f.puts(Rufus::Json.dump(data))
     end
 
-    puts "wrote data/roots.json, took #{Time.now - t}s"
+    puts "wrote #{fname}, took #{Time.now - t}s"
   end
 
   def self.generate
 
+    @@kanji = {}
     @@roots = {}
+    @@radicals = {}
 
     translate_file('data/edict2.txt', 'data/edict2.json')
     translate_file('data/kanjidic.txt', 'data/kanjidic.json')
+    read_krad_file('data/kradfile-u')
 
     sort_roots
-    write_roots
+    write(@@roots, 'data/roots.json')
+    write(@@radicals, 'data/radicals.json')
   end
 
   R_ID = /^{\"id\":\"([a-zA-Z0-9]+)\"/
@@ -312,17 +363,17 @@ module Index
     puts "loaded #{fname}, took #{Time.now - t}s"
   end
 
-  def self.load_roots
-
-    fname = 'data/roots.json'
+  def self.load_r(fname)
 
     t = Time.now
 
     puts "loading #{fname}..."
 
-    @@roots = Rufus::Json.decode(File.read(fname))
+    r = Rufus::Json.decode(File.read(fname))
 
     puts "loaded #{fname}, took #{Time.now - t}s"
+
+    r
   end
 
   def self.load
@@ -332,7 +383,8 @@ module Index
     load_file('data/edict2.json')
     load_file('data/kanjidic.json')
 
-    load_roots
+    @@roots = load_r('data/roots.json')
+    @@radicals = load_r('data/radicals.json')
   end
 
   def self.entry(id)
