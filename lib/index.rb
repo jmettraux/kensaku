@@ -119,13 +119,12 @@ class Entry
     e.romaji = filter_romaji(e.kana)
     e.split_romaji = e.romaji.collect { |r| split_romaji(r) }
 
-    e.glosses.concat(
+    e.glosses <<
       tail.split('{').collect { |x|
         x.gsub('}', '').strip
       }.reject { |x|
         x.length < 1
-      }
-    )
+      }.join('; ')
 
     e
   end
