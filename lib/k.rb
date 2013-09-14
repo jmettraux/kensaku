@@ -30,10 +30,10 @@ Index.load
 
 module Krad
 
-  NON_DISPLAYABLE_RADICALS =
-    %w[ R201a2 R2e85 R2e8c R2eb9 R2ebe R2ecf R2ed6 Rfa66 ]
-
   def self.load
+
+    non_displayable_radicals =
+      %w[ R201a2 R2e85 R2e8c R2eb9 R2ebe R2ecf R2ed6 Rfa66 ]
 
     kans = {}
     rads = {}
@@ -49,7 +49,7 @@ module Krad
       kcode = "U#{kanji.ord.to_s(16)}"
 
       rcodes = radicals.collect { |r| "R#{r.ord.to_s(16)}" }
-      rcodes = rcodes - NON_DISPLAYABLE_RADICALS
+      rcodes = rcodes - non_displayable_radicals
 
       next unless Index.ji(kcode)
 
