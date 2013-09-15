@@ -143,7 +143,7 @@ get '/marks/:u' do
 
   fname = "marks/#{u}.json"
 
-  marks = '';
+  marks = []
   marks = File.readlines(fname) if File.exist?(fname)
   marks = marks.collect { |m| m.strip.inspect }.join(',')
 
