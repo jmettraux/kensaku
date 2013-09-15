@@ -3,7 +3,7 @@
 #content
 
   #search
-    %input#query{ :type => :text }
+    %input#query{ :type => :text, :autocapitalize => 'off', :autocomplete => 'off', 'autocorrect' => 'off', :spellcheck => 'false' }
     %span.clear
       ⊗
 
@@ -25,11 +25,6 @@
     var $clear = $('#search > span.clear');
     var $cols = $('#cols');
     var $results = $('#results');
-
-    $query.attr('autocapitalize', 'off');
-    $query.attr('autocomplete', 'off');
-    $query.attr('autocorrect', 'off');
-    $query.attr('spellcheck', 'false');
 
     var previousEvent = undefined;
 
