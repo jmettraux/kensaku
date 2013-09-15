@@ -18,6 +18,7 @@
   var u = #{param_u};
 
   Caboche.phase(0, 'marks/' + u);
+  Caboche.phase(1, 'radicals');
 
   Caboche.last(function() {
 
@@ -53,9 +54,9 @@
 
       var jiClick = function(ev) {
         var $target = $(ev.target);
-        var code = 'U' + $target.text().charCodeAt(0).toString(16);
-        if ($('#' + code).length > 0) {
-          window.location.href = '#' + code;
+        var id = '#' + Ks.charToCode($target.text());
+        if ($(id).length > 0) {
+          window.location.href = id;
           return;
         }
         $.ajax({

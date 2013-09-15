@@ -262,8 +262,7 @@ module Index
 
   def self.read_krad_file(fname)
 
-    non_displayable_radicals =
-      %w[ R201a2 R2e85 R2e8c R2eb9 R2ebe R2ecf R2ed6 Rfa66 ]
+    non_display_radicals = %w[ 201a2 2e85 2e8c 2eb9 2ebe 2ecf 2ed6 fa66 ]
 
     count = 0
 
@@ -277,8 +276,10 @@ module Index
       kanji = radicals.shift
       kcode = "U#{kanji.ord.to_s(16)}"
 
-      rcodes = radicals.collect { |r| "R#{r.ord.to_s(16)}" }
-      rcodes = rcodes - non_displayable_radicals
+      radicals =
+        radicals.reject { |r| non_display_radicals.include?(r.ord.to_s(16)) }
+      rcodes =
+        radicals.collect { |r| "R#{r.ord.to_s(16)}" }
 
       entry = @@kanji[kcode]
 
@@ -286,11 +287,21 @@ module Index
 
       count = count + 1
 
-      (entry.children ||= []) << rcodes
+      (entry.children ||= []) << radicals
 
-      rcodes.each do |rcode|
-        (@@radicals[rcode] ||= []) << kcode
+      # radicals.json:
+      #
+      # storing the codes, 183k
+      # storing the characters, 138k
+      # (was hoping for it to go down to ~65k...
+      #
+      # storing { radical => kanji_u_code }
+
+      radicals.each do |rad|
+        (@@radicals[rad] ||= []) << kcode
       end
+
+      # TODO: need them sorted by stroke count...
     end
 
     puts "#{count} kanji, #{@@radicals.size} radicals"
@@ -385,7 +396,7 @@ module Index
     load_file('data/kanjidic.json')
 
     @@roots = load_r('data/roots.json')
-    @@radicals = load_r('data/radicals.json')
+    #@@radicals = load_r('data/radicals.json')
   end
 
   def self.entry(id)

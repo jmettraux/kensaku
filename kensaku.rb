@@ -150,3 +150,14 @@ get '/marks/:u' do
   [ 'var marks = [', marks, '];' ]
 end
 
+get '/radicals' do
+
+  content_type 'application/json; charset=utf-8'
+  cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
+
+  [
+    'var radicals = ',
+    File.read('data/radicals.json'), "; \n",
+    'var rads = []; for (var k in radicals) rads.push(k);' ]
+end
+
