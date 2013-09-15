@@ -139,7 +139,12 @@ end
 
 get '/marks/:u' do
 
-  marks = begin; File.readlines("marks/#{params[:u]}.json"); rescue []; end
+  u = params[:u].split('.').last
+
+  fname = "marks/#{u}.json"
+
+  marks = '';
+  marks = File.readlines(fname) if File.exist?(fname)
   marks = marks.collect { |m| m.strip.inspect }.join(',')
 
   [ 'var marks = [', marks, '];' ]

@@ -150,29 +150,29 @@
       $cols.empty();
       $results.empty();
 
-      //try {
+      try {
 
-      var cols = 0;
-      Nu.each(results, function(entry) {
-        if (cols === 7) return;
-        if (entry.ki.length < 1) return;
-        cols = cols + 1;
-        var col = Fb.c($cols, '.col', entry.ki[0]);
-        if (entry.id && entry.id.match(/^U/)) col.span('.k', 'ⓚ');
-        $(col).on('click', function(ev) {
-          window.location.href = '#' + entry.id;
+        var cols = 0;
+        Nu.each(results, function(entry) {
+          if (cols === 7) return;
+          if (entry.ki.length < 1) return;
+          cols = cols + 1;
+          var col = Fb.c($cols, '.col', entry.ki[0]);
+          if (entry.id && entry.id.match(/^U/)) col.span('.k', 'ⓚ');
+          $(col).on('click', function(ev) {
+            window.location.href = '#' + entry.id;
+          });
         });
-      });
 
-      //}
-      //catch(err) {
-      //  var derr = Fb.c($results, '.entry.error');
-      //  derr.div('message: ' + err.message);
-      //  derr.div('line: ' + err.line);
-      //  derr.div('stack:<br/>' + err.stack);
-      //}
+        Nu.each(results, displayEntry);
 
-      Nu.each(results, displayEntry);
+      }
+      catch(err) {
+        var derr = Fb.c($results, '.entry.error');
+        derr.div('message: ' + err.message);
+        derr.div('line: ' + err.line);
+        derr.div('stack:<br/>' + err.stack);
+      }
     };
 
     $query.on('keyup', function(ev) {
