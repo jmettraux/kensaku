@@ -169,6 +169,11 @@ class Entry
     type == 'k'
   end
 
+  def strokes
+
+    @glosses.first.split(' ').find { |g| g.match(/^S/) }[1..-1].to_i
+  end
+
   protected
 
   def self.filter_romaji(ss)
@@ -262,7 +267,20 @@ module Index
 
   def self.read_krad_file(fname)
 
-    non_display_radicals = %w[ 201a2 2e85 2e8c 2eb9 2ebe 2ecf 2ed6 fa66 ]
+    non_display_radicals =
+      %w[ 201a2 2e85 2e8c 2eb9 2ebe 2ecf 2ed6 fa66 ]
+
+    stroke =
+      Struct.new(:strokes)
+    strokes =
+      {
+        'ノ' => 1, '｜' => 1, 'ハ' => 1, 'マ' => 2, 'ヨ' => 3, '刂' => 2,
+        '禸' => 4, '灬' => 3, '罒' => 5, 'ユ' => 2, '衤' => 5, '氵' => 3,
+        '扌' => 3, '犭' => 3, '疒' => 5, '忄' => 3, '礻' => 4
+      }.each_with_object({}) { |(k, v), h|
+        h[k] = stroke.new(v)
+      }
+      # stroke counts for radicals without a corresponding kanji
 
     count = 0
 
@@ -298,10 +316,12 @@ module Index
       # storing { radical => kanji_u_code }
 
       radicals.each do |rad|
-        (@@radicals[rad] ||= []) << kcode
-      end
 
-      # TODO: need them sorted by stroke count...
+        @@radicals[rad] ||=
+          [ (@@kanji["U#{rad.ord.to_s(16)}"] || strokes[rad]).strokes ]
+
+        @@radicals[rad] << kcode
+      end
     end
 
     puts "#{count} kanji, #{@@radicals.size} radicals"
