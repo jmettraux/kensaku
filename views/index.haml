@@ -36,6 +36,16 @@
         $query.focus();
       };
 
+    var displayKanjiMeta = function(elt, entry) {
+
+      var meta = Ks.splitMeta(entry.gs);
+      //elt.div('.gloss', JSON.stringify(meta));
+      Nu.each(meta, function(k, v) {
+        elt.span('.kgloss', k + ': ');
+        elt.span('.vgloss', v);
+      });
+    }
+
     var displayEntry = function(entry, i) {
 
       var e;
@@ -80,6 +90,7 @@
       if (isKanji) ki.$.addClass('kanji-entry');
 
       var gs = e.div('.gs')
+      if (isKanji) displayKanjiMeta(gs, entry);
       Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
 
       gs.div('.gloss', entry.id);

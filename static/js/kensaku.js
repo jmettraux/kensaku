@@ -36,6 +36,31 @@ var Ks = (function() {
     return prefix + c.charCodeAt(0).toString(16);
   };
 
+  var kanjiMeta =
+    {
+      N: 'nlsn', B: 'nlsn 部首', C: 'cla 部首',
+      S: 'strokes', G: 'grade', H: 'halpern', F: 'freq', P: 'skip',
+      Q: '4co', M: '大漢和', Y: 'pinyin', W: 'korean', T: 't'
+    };
+
+  this.splitMeta = function(glosses) {
+
+    var ss = glosses[0].split(' ');
+    //var a = [];
+    var r = {};
+
+    Nu.each(ss, function(e) {
+      var title = kanjiMeta[e.charAt(0)];
+      //if ( ! title) a.push(e);
+      if (title) r[title] = e.slice(1);
+    });
+
+    //glosses[0] = a.join(' ');
+    glosses.splice(0, 1);
+
+    return r;
+  };
+
   return this;
 
 }).apply({});
