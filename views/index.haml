@@ -31,10 +31,11 @@
 
     var log =
       function(err) {
-        var derr = Fb.c($results, '.entry.error');
+        var derr = Fb.c($results, '#err.entry.error');
         derr.div('message: ' + err.message);
         derr.div('line: ' + err.line);
         derr.div('stack:<br/>' + err.stack);
+        window.location.href = '#err';
       };
 
     var clear =
