@@ -37,3 +37,10 @@ def pmem(msg)
   p [ msg, "#{ps[:vsz].to_i / 1024}k", ps[:pmem] ]
 end
 
+def mem_to_s
+
+  ps = self_ps
+
+  "vsz:#{ps[:vsz].to_i / 1024}k pmem:#{ps[:pmem]}%"
+end
+

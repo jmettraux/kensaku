@@ -384,15 +384,18 @@ module Index
   def self.load_file(fname)
 
     t = Time.now
+    count = 0
 
     puts "loading #{fname}..."
 
     File.readlines(fname).each do |line|
       id = line.match(R_ID)[1]
       @@index[id] = line.chop
+      count += 1
     end
 
-    puts "loaded #{fname}, took #{Time.now - t}s"
+    puts "  #{count} entries"
+    puts "  loaded #{fname}, took #{Time.now - t}s"
   end
 
   def self.load_r(fname)
@@ -402,8 +405,9 @@ module Index
     puts "loading #{fname}..."
 
     r = Rufus::Json.decode(File.read(fname))
+    puts "  #{r.size} entries"
 
-    puts "loaded #{fname}, took #{Time.now - t}s"
+    puts "  loaded #{fname}, took #{Time.now - t}s"
 
     r
   end
