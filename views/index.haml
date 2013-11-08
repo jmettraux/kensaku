@@ -3,11 +3,14 @@
 #content
 
   #search
+    %span.kanji-lookup.k
+      ⓚ
     %input#query{ :type => :text, :autocapitalize => 'off', :autocomplete => 'off', 'autocorrect' => 'off', :spellcheck => 'false' }
     %span.clear
       ⊗
 
-  #cols
+  #rads
+  #cols.row
 
   #results
 
@@ -23,7 +26,9 @@
   Caboche.last(function() {
 
     var $query = $('#query');
+    var $klookup = $('#search > span.kanji-lookup');
     var $clear = $('#search > span.clear');
+    var $rads = $('#rads');
     var $cols = $('#cols');
     var $results = $('#results');
 
@@ -161,6 +166,19 @@
       });
     };
 
+    var displayRadicals = function() {
+
+      var col = 0;
+      var $row;
+      Nu.each(radicals, function(k, v) {
+        //console.log(col, [ k, v.length ]);
+        if (col === 5) col = 0;
+        if (col === 0) $row = Fb.c($rads, '.row', '').$;
+        var co = Fb.c($row, '.col', k);
+        col = col + 1;
+      });
+    };
+
     var displayResults = function(query, results) {
 
       if (results === []) return;
@@ -190,6 +208,7 @@
 
     $query.on('keyup', function(ev) {
 
+      $rads.empty();
       $clear.removeClass('error');
 
       var q = $.trim($query.val()).toLowerCase();
@@ -211,7 +230,8 @@
       });
     });
 
-    $('.clear').on('click', clear);
+    $klookup.on('click', displayRadicals);
+    $clear.on('click', clear);
 
     window.setTimeout(function() {
       //window.scrollTo(0, 1);
