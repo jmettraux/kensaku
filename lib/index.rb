@@ -274,7 +274,7 @@ module Index
       Struct.new(:strokes)
     strokes =
       {
-        'ノ' => 1, '｜' => 1, 'ハ' => 1, 'マ' => 2, 'ヨ' => 3, '刂' => 2,
+        'ノ' => 1, '｜' => 1, 'ハ' => 2, 'マ' => 2, 'ヨ' => 3, '刂' => 2,
         '禸' => 4, '灬' => 3, '罒' => 5, 'ユ' => 2, '衤' => 5, '氵' => 3,
         '扌' => 3, '犭' => 3, '疒' => 5, '忄' => 3, '礻' => 4
       }.each_with_object({}) { |(k, v), h|
@@ -323,6 +323,9 @@ module Index
         @@radicals[rad] << kcode
       end
     end
+
+    @@radicals =
+      @@radicals.sort_by { |k, v| v[0] }.inject({}) { |h, (k, v)| h[k] = v; h; }
 
     puts "#{count} kanji, #{@@radicals.size} radicals"
   end
