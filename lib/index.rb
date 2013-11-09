@@ -274,9 +274,19 @@ module Index
       Struct.new(:strokes)
     strokes =
       {
-        'ノ' => 1, '｜' => 1, 'ハ' => 2, 'マ' => 2, 'ヨ' => 3, '刂' => 2,
-        '禸' => 4, '灬' => 3, '罒' => 5, 'ユ' => 2, '衤' => 5, '氵' => 3,
-        '扌' => 3, '犭' => 3, '疒' => 5, '忄' => 3, '礻' => 4
+        'ノ' => 1, '｜' => 1, 'ハ' => 2, 'マ' => 2, 'ヨ' => 3,
+        '刂' => 2, # U5202 ri
+        '禸' => 4, # U79b8
+        '灬' => 4, # U706c four legs
+        '罒' => 5, # U7f52 one box, three compartments
+        'ユ' => 2,
+        '衤' => 5, # U8864 ne+1
+        '氵' => 3, # U6c35 sanzui
+        '扌' => 3, # U624c tehen
+        '犭' => 3, # U72ad dog radical
+        '疒' => 5, # U7592 sickness
+        '忄' => 3, # U5fc4 heart
+        '礻' => 4  # U793b ne, as in jinja and kaisha, ancestor veneration
       }.each_with_object({}) { |(k, v), h|
         h[k] = stroke.new(v)
       }
