@@ -49,8 +49,12 @@ span.menu {
   margin-left: 0.5em;
 }
 
-//#cols {
-//}
+#rads {
+  //float: left;
+  width: 86px;
+  overflow: hidden;
+  border-right: 1px solid white;
+}
 .row {
   -webkit-writing-mode: vertical-rl;
   float: right;

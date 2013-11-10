@@ -8,10 +8,8 @@
     %input#query{ :type => :text, :autocapitalize => 'off', :autocomplete => 'off', 'autocorrect' => 'off', :spellcheck => 'false' }
     %span.clear
       ⊗
-
   #rads
   #cols.row
-
   #results
 
 #bottom
@@ -172,7 +170,7 @@
       var $row;
       var strokes = 0;
       Nu.each(radicals, function(k, v) {
-        if (col === 5) col = 0;
+        if (col === 2) col = 0;
         if (col === 0) $row = Fb.c($rads, '.row', '').$;
         var co = Fb.c($row, '.col.rad', k);
         //var co = Fb.c($row, '.col.rad', { 'data-ks-u': Ks.charToCode(k) }, k);
