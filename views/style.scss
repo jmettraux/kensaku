@@ -64,6 +64,16 @@ span.menu {
   padding: 0.29em;
   padding-right: 0.46em;
 }
+.col.rad {
+  width: 1em;
+}
+.stroke-count {
+  -webkit-writing-mode: horizontal-bt;
+  font-size: 50%;
+  position: relative;
+  top: 1.4em;
+  left: 0.25em;
+}
 
 #results {
   clear: both;

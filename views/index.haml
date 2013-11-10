@@ -170,12 +170,16 @@
 
       var col = 0;
       var $row;
+      var strokes = 0;
       Nu.each(radicals, function(k, v) {
-        //console.log(col, [ k, v.length ]);
         if (col === 5) col = 0;
         if (col === 0) $row = Fb.c($rads, '.row', '').$;
-        var co = Fb.c($row, '.col', k);
-        //var co = Fb.c($row, '.col', { 'data-ks-u': Ks.charToCode(k) }, k);
+        var co = Fb.c($row, '.col.rad', k);
+        //var co = Fb.c($row, '.col.rad', { 'data-ks-u': Ks.charToCode(k) }, k);
+        if (v[0] > strokes) {
+          strokes = v[0];
+          Fb.c(co, '.stroke-count', '' + (v[0] % 10));
+        }
         col = col + 1;
       });
     };
