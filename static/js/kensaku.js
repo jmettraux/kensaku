@@ -61,6 +61,25 @@ var Ks = (function() {
     return r;
   };
 
+  this.intersection = function(array0, array1) {
+
+    var a = [];
+
+    var l;
+    l = array0.length;
+    for (var i = 0; i < l; i++) {
+      var e = array0[i];
+      if (array1.indexOf(e) > -1 && a.indexOf(e) < 0) a.push(e);
+    }
+    l = array1.length;
+    for (var i = 0; i < l; i++) {
+      var e = array1[i];
+      if (array0.indexOf(e) > -1 && a.indexOf(e) < 0) a.push(e);
+    }
+
+    return a;
+  };
+
   return this;
 
 }).apply({});

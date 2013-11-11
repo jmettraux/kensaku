@@ -164,6 +164,37 @@
       });
     };
 
+    var clickRadical = function(ev) {
+
+      $(ev.target).toggleClass('selected');
+
+      var selected = Nu.collect($('.rad.selected'), function(e) {
+        return $(e).text()[0];
+      });
+
+      var codes = null;
+      Nu.each(selected, function(s) {
+        var jis = radicals[s].slice(1);
+        codes = Ks.intersection(codes || jis, jis);
+      });
+      console.log(JSON.stringify(codes));
+
+      //if ( ! codes) return;
+      //if (codes.length < 1) return;
+        // TODO: clean results...
+
+      $.ajax({
+        url: '/jis/' + codes.join(','),
+        success: function(data) {
+          //displayEntry(data, $target.closest('.entry'));
+          console.log(data);
+          Nu.each(data, function(ji) {
+            displayEntry(ji, $('#results'));
+          });
+        }
+      });
+    }
+
     var displayRadicals = function() {
 
       var col = 0;
@@ -179,6 +210,7 @@
           strokes = v[0];
           Fb.c(co, '.stroke-count', '' + (v[0] % 10));
         }
+        $(co).on('click', clickRadical);
         col = col + 1;
       });
     };
