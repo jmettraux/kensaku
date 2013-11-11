@@ -71,6 +71,9 @@ span.menu {
 .col.rad {
   width: 1em;
 }
+#rUff5c { // special case
+  -webkit-writing-mode: horizontal-bt;
+}
 .stroke-count {
   -webkit-writing-mode: horizontal-bt;
   font-size: 50%;
