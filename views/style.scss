@@ -31,6 +31,7 @@ span.kanji-lookup {
   margin-right: 0.2em;
   position: relative;
   top: 3px;
+  left: 0.6em;
 }
 input#query {
   font-size: 120%;
@@ -49,11 +50,18 @@ span.menu {
   margin-left: 0.5em;
 }
 
+#output {
+  position: relative; // to anchor the absolute #rads
+}
 #rads {
-  //float: left;
+  position: absolute;
+  right: -1px;
   width: 86px;
   overflow: hidden;
+  border-left: 1px solid white;
   border-right: 1px solid white;
+  background-color: black;
+  z-index: 77;
 }
 .row {
   -webkit-writing-mode: vertical-rl;

@@ -3,14 +3,15 @@
 #content
 
   #search
-    %span.kanji-lookup.k
-      ⓚ
     %input#query{ :type => :text, :autocapitalize => 'off', :autocomplete => 'off', 'autocorrect' => 'off', :spellcheck => 'false' }
     %span.clear
       ⊗
-  #rads
-  #cols.row
-  #results
+    %span.kanji-lookup.k
+      ⓚ
+  #output
+    #rads
+    #cols.row
+    #results
 
 #bottom
 
@@ -246,7 +247,7 @@
 
     $query.on('keyup', function(ev) {
 
-      $rads.empty();
+      //$rads.empty();
       $clear.removeClass('error');
 
       var q = $.trim($query.val()).toLowerCase();

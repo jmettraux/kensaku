@@ -6,4 +6,6 @@
 [ ] store kanji radicals
 
 [o] order radicals by stroke count
+[ ] orders /jis/:codes output by stroke counts
+[ ] limit client side the # of :codes passed to /jis/:codes
 
