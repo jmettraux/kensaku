@@ -197,6 +197,8 @@
 
     var displayRadicals = function() {
 
+      if ($rads.children().length > 0) { $rads.empty(); return; }
+
       var col = 0;
       var $row;
       var strokes = 0;
