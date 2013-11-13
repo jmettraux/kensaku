@@ -9,7 +9,7 @@
     %span.kanji-lookup.k
       ⓚ
   #output
-    #rads
+    #rads{ :style => 'display: none;' }
     #cols.row
     #results
 
@@ -196,9 +196,12 @@
       });
     }
 
-    var displayRadicals = function() {
+    var toggleRadicals = function() {
 
-      if ($rads.children().length > 0) { $rads.empty(); return; }
+      $rads.toggle();
+    };
+
+    var displayRadicals = function() {
 
       var col = 0;
       var $row;
@@ -269,7 +272,9 @@
       });
     });
 
-    $klookup.on('click', displayRadicals);
+    displayRadicals();
+
+    $klookup.on('click', toggleRadicals);
     $clear.on('click', clear);
 
     window.setTimeout(function() {
