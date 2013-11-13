@@ -43,19 +43,17 @@ var Ks = (function() {
       Q: '4co', M: '大漢和', Y: 'pinyin', W: 'korean', T: 't'
     };
 
-  this.splitMeta = function(glosses) {
+  this.spliceMeta = function(glosses) {
+
+    var r = {};
 
     var ss = glosses[0].split(' ');
-    //var a = [];
-    var r = {};
 
     Nu.each(ss, function(e) {
       var title = kanjiMeta[e.charAt(0)];
-      //if ( ! title) a.push(e);
       if (title) r[title] = e.slice(1);
     });
 
-    //glosses[0] = a.join(' ');
     glosses.splice(0, 1);
 
     return r;

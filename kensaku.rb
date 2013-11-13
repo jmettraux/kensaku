@@ -97,7 +97,14 @@ get '/jis/:codes' do
 
   codes = params[:codes].split(',')
 
-  '[' + codes.collect { |c| Index.ji(c) }.join(',') + ']'
+  jis =
+    codes.collect { |c|
+      Index.ji(c)
+    }.sort_by { |ji|
+      ji.match(/ S(\d+)/)[1].to_i
+    }.reverse
+
+  '[' + jis.join(',') + ']'
 end
 
 get '/ip' do

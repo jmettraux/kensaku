@@ -51,8 +51,8 @@
 
     var displayKanjiMeta = function(elt, entry) {
 
-      var meta = Ks.splitMeta(entry.gs);
-      //elt.div('.gloss', JSON.stringify(meta));
+      var meta = Ks.spliceMeta(entry.gs);
+
       Nu.each(meta, function(k, v) {
         elt.span('.kgloss', k + ': ');
         elt.span('.vgloss', v);
@@ -178,19 +178,15 @@
         var jis = radicals[s].slice(1);
         codes = Ks.intersection(codes || jis, jis);
       });
-      console.log(JSON.stringify(codes));
-
-      //if ( ! codes) return;
-      //if (codes.length < 1) return;
-        // TODO: clean results...
+      codes = codes || [];
 
       $.ajax({
         url: '/jis/' + codes.join(','),
         success: function(data) {
-          //displayEntry(data, $target.closest('.entry'));
-          console.log(data);
+          $cols.empty();
+          $results.empty();
           Nu.each(data, function(ji) {
-            displayEntry(ji, $('#results'));
+            displayEntry(ji, $results);
           });
         }
       });
