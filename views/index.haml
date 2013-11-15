@@ -194,32 +194,39 @@
 
     var toggleRadicals = function() {
 
+      if ($rads.children().length < 1) displayRadicals();
+
       $rads.toggle();
     };
 
     var displayRadicals = function() {
 
-      radicals[''] = [ 17 ];
-      radicals[' '] = [ 17 ];
-      radicals['  '] = [ 17 ];
-        // shadow slots
+      try {
 
-      var col = 0;
-      var $row;
-      var strokes = 0;
-      Nu.each(radicals, function(k, v) {
-        if (col === 4) col = 0;
-        if (col === 0) $row = Fb.c($rads, '.row', '').$;
-        var sk = k;
-        var ck = Ks.charToCode(k, 'rU');
-        var co = Fb.c($row, '.col.rad', { id: ck }, sk);
-        if (v[0] > strokes) {
-          strokes = v[0];
-          Fb.c(co, '.stroke-count', '' + (v[0] % 10));
-        }
-        if (v[1]) $(co).on('click', clickRadical);
-        col = col + 1;
-      });
+        radicals[''] = [ 17 ];
+        radicals[' '] = [ 17 ];
+        radicals['  '] = [ 17 ];
+          // shadow slots
+
+        var col = 0;
+        var $row;
+        var strokes = 0;
+        Nu.each(radicals, function(k, v) {
+          if (col === 4) col = 0;
+          if (col === 0) $row = Fb.c($rads, '.row', '').$;
+          var sk = k;
+          var ck = Ks.charToCode(k, 'rU');
+          var co = Fb.c($row, '.col.rad', { id: ck }, sk);
+          if (v[0] > strokes) {
+            strokes = v[0];
+            Fb.c(co, '.stroke-count', '' + (v[0] % 10));
+          }
+          if (v[1]) $(co).on('click', clickRadical);
+          col = col + 1;
+        });
+
+      }
+      catch(err) { log(err); }
     };
 
     var displayResults = function(query, results) {
@@ -272,8 +279,6 @@
         }
       });
     });
-
-    displayRadicals();
 
     $klookup.on('click', toggleRadicals);
     $clear.on('click', clear);
