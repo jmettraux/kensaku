@@ -26,6 +26,8 @@ configure do
 
   set :haml, :format => :html5
   set :scss, Compass.sass_engine_options
+
+  set :protection, :except => [ :json_csrf ]
 end
 
 use(
