@@ -180,6 +180,9 @@
       });
       codes = codes || [];
 
+      codes = codes.slice(0, 154);
+        // at 175, it coughs, bad request...
+
       $.ajax({
         url: '/jis/' + codes.join(','),
         success: function(data) {
