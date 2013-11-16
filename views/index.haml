@@ -183,14 +183,15 @@
       codes = codes.slice(0, 154);
         // at 175, it coughs, bad request...
 
+      $cols.empty();
+      $results.empty();
+
+      if (codes.length < 1) return;
+
       $.ajax({
         url: '/jis/' + codes.join(','),
         success: function(data) {
-          $cols.empty();
-          $results.empty();
-          Nu.each(data, function(ji) {
-            displayEntry(ji, $results);
-          });
+          Nu.each(data, displayEntry);
         }
       });
     }
