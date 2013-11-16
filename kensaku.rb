@@ -104,7 +104,7 @@ get '/jis/:codes' do
       Index.ji(c)
     }.sort_by { |ji|
       ji.match(/ S(\d+)/)[1].to_i
-    }.reverse
+    }
 
   '[' + jis.join(',') + ']'
 end
