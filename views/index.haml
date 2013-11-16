@@ -53,6 +53,10 @@
 
       var meta = Ks.spliceMeta(entry.gs);
 
+      if (meta.grade) {
+        $(elt).closest('.entry').find('.kanji-entry').addClass('jouyou');
+      }
+
       Nu.each(meta, function(k, v) {
         elt.span('.kgloss', k + ': ');
         elt.span('.vgloss', v);
