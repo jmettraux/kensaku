@@ -1,0 +1,5 @@
+
+ Unicode range   U+4E00–U+9FBF Kanji     19'968 -> 40'895
+                 U+3040–U+309F Hiragana
+                 U+30A0–U+30FF Katakana
+
