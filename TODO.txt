@@ -3,10 +3,12 @@
 [o] show bookmarked entries
 
 [o] don't index root if length > 12 or 14
-[ ] store kanji radicals
+[x] store kanji radicals
 
 [o] order radicals by stroke count
 [o] pre-display rads, simply toggle their visibility
 [o] orders /jis/:codes output by stroke counts
 [o] limit client side the # of :codes passed to /jis/:codes
+
+[ ] discard Entry@children (they seem not used... I forgot...)
 

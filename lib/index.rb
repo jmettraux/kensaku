@@ -140,6 +140,7 @@ class Entry
         'gs' => @glosses
       }
     h['cn'] = @children if @children
+    h['lo'] = @locations if @locations
 
     h
   end
@@ -172,6 +173,12 @@ class Entry
   def strokes
 
     @glosses.first.split(' ').find { |g| g.match(/^S/) }[1..-1].to_i
+  end
+
+  def locations=(l)
+
+    l ||= [ [], [], [] ]
+    @locations = [ l[0].uniq, l[1].uniq, l[2].uniq ]
   end
 
   protected
@@ -225,9 +232,35 @@ end
 
 module Index
 
+  def self.kanji_code(c)
+
+    c.ord >= 19968 && c.ord <= 40895 ? "U#{c.ord.to_s(16)}" : nil
+  end
+
+  def self.index_location(e, k)
+
+    ei = e.id[1..-1].to_i
+    cs = k.chars.to_a
+
+    cs.each_with_index do |c, i|
+      kc = kanji_code(c)
+      next unless kc
+      l = (@@locations[kc] ||= [ [], [], [] ])
+      l[2] << ei                        # contains
+      l[0] << ei if i == 0              # starts
+      l[1] << ei if i == cs.length - 1  # ends
+    end
+  end
+
   def self.index_entry(e)
 
-    @@kanji[e.id] = e if e.kanji?
+    if e.kanji?
+      @@kanji[e.id] = e
+      # TODO: add indexed sta/end/con
+      e.locations = @@locations[e.id]
+    else
+      e.kanji.each { |k| index_location(e, k) }
+    end
 
     e.split_romaji.each do |sr|
 
@@ -380,6 +413,7 @@ module Index
   def self.generate
 
     @@kanji = {}
+    @@locations = {} # [ starts, ends, contains ]
     @@roots = {}
     @@radicals = {}
 
