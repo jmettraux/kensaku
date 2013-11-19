@@ -177,8 +177,7 @@ class Entry
 
   def locations=(l)
 
-    l ||= [ [], [], [] ]
-    @locations = [ l[0].uniq, l[1].uniq, l[2].uniq ]
+    @locations = l ? l.collect(&:uniq) : nil
   end
 
   protected
