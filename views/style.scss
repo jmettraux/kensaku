@@ -142,6 +142,9 @@ span.menu {
 .gloss {
   margin-top: 0.2em;
 }
+.entry-id {
+  display: inline-block;
+}
 .kgloss {
   display: inline-block;
   font-size: 80%;
@@ -151,6 +154,16 @@ span.menu {
   display: inline-block;
   font-size: 80%;
   width: 65px;
+}
+.locations {
+  display: inline-block;
+  margin-left: 1.7em;
+}
+
+.location {
+  display: inline-block;
+  font-size: 70%;
+  margin-left: 1.4em;
 }
 
 .added {

@@ -33,21 +33,50 @@
 
     var previousEvent = undefined;
 
-    var log =
-      function(err) {
-        var derr = Fb.c($results, '#err.entry.error');
-        derr.div('message: ' + err.message);
-        derr.div('line: ' + err.line);
-        derr.div('stack:<br/>' + err.stack);
-        window.location.href = '#err';
-      };
+    var log = function(err) {
 
-    var clear =
-      function(ev) {
-        $query.val('');
-        displayResults('', []);
-        $query.focus();
-      };
+      var derr = Fb.c($results, '#err.entry.error');
+      derr.div('message: ' + err.message);
+      derr.div('line: ' + err.line);
+      derr.div('stack:<br/>' + err.stack);
+      window.location.href = '#err';
+    };
+
+    var clear = function(ev) {
+
+      $query.val('');
+      displayResults('', []);
+      $query.focus();
+    };
+
+    var clickLocations = function(ev, entry) {
+
+      var $target = $(ev.target);
+      $target.off();
+
+      var $entry = $target.closest('.entry');
+      $target.text('∋');
+
+      $.ajax({
+        url: '/locations/' + entry.id,
+        success: function(data) {
+          $target.html('');
+          var $b = null;
+          $b = Fb.c($target, '.location', 'starts (' + data[0].length + ')').$;
+          $b.on('click', function(ev) {
+            Nu.each(data[0], function(en) { displayEntry(en, $entry); });
+          });
+          $b = Fb.c($target, '.location', 'ends (' + data[1].length + ')').$;
+          $b.on('click', function(ev) {
+            Nu.each(data[1], function(en) { displayEntry(en, $entry); });
+          });
+          $b = Fb.c($target, '.location', 'contains (' + data[2].length + ')').$;
+          $b.on('click', function(ev) {
+            Nu.each(data[2], function(en) { displayEntry(en, $entry); });
+          });
+        }
+      });
+    };
 
     var displayKanjiMeta = function(elt, entry) {
 
@@ -112,18 +141,29 @@
       if (isKanji) displayKanjiMeta(gs, entry);
       Nu.each(entry.gs, function(gloss) { gs.div('.gloss', gloss); });
 
-      gs.div('.gloss', entry.id);
+      gs.div('.gloss.entry-id', entry.id);
+
+      if (entry.lo) {
+        var $lo = gs.div('.locations', '∈').$;
+        $lo.on('click', function(ev) { clickLocations(ev, entry); });
+      }
 
       if (marks.indexOf(entry.id) > -1) e.div('.added', '⚆');
 
+
       $e.on('click', function(ev) {
+
+        var $target = $(ev.target);
+        if ($target.hasClass('location') || $target.hasClass('locations')) {
+          return;
+        }
 
         var pev = previousEvent || { timeStamp: 0, screenX: 0, screenY: 0 };
 
         var deltaX = ev.screenX - pev.screenX;
         var deltaY = ev.screenY - pev.screenY;
         var pta = $(pev.target).closest('.entry')[0];
-        var ta = $(ev.target).closest('.entry')[0];
+        var ta = $target.closest('.entry')[0];
 
         //e.div('.log', JSON.stringify([ 'x', deltaX ]));
         //e.div('.log', JSON.stringify([ 'y', deltaY ]));
