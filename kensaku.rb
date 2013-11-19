@@ -3,6 +3,8 @@ require 'sinatra'
 require 'haml'
 require 'compass'
 
+require 'rufus-json/automatic'
+
 
 #
 # kensaku index loading
@@ -106,7 +108,25 @@ get '/jis/:codes' do
       ji.match(/ S(\d+)/)[1].to_i
     }
 
-  '[' + jis.join(',') + ']'
+  [ '[', jis.join(','), ']' ]
+end
+
+get '/locations/:code' do
+
+  content_type 'application/json; charset=utf-8'
+  #cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
+
+  ji = Index.ji(params[:code])
+
+  return '[]' unless ji
+
+  r = Rufus::Json.decode(ji)['lo'].map { |l| l.map { |c| Index.ji("E#{c}") } }
+
+  [
+    '[[', r[0].join(','), '],',
+    '[', r[1].join(','), '],',
+    '[', r[2].join(','), ']]'
+  ]
 end
 
 get '/ip' do
