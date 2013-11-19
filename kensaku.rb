@@ -95,7 +95,7 @@ end
 get '/jis/:codes' do
 
   content_type 'application/json; charset=utf-8'
-  #cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
+  cache_control :public, max_age: 2 * 24 * 3600 # cache for 2d
 
   codes = params[:codes].split(',')
 
