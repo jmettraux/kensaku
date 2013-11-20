@@ -51,7 +51,7 @@
 
     var clickLocations = function(ev, entry) {
 
-      var $target = $(ev.target);
+      var $target = $(ev.target).closest('.locations');
       $target.off();
 
       var $entry = $target.closest('.entry');
@@ -145,7 +145,8 @@
       gs.div('.gloss.entry-id', entry.id);
 
       if (entry.lo) {
-        var $lo = gs.div('.locations', '∈').$;
+        var $lo = gs.div('.locations').$;
+        Fb.c($lo, 'span.element', '∈');
         $lo.on('click', function(ev) { clickLocations(ev, entry); });
       }
 
