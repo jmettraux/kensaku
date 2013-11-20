@@ -61,21 +61,15 @@
         url: '/locations/' + entry.id,
         success: function(data) {
           $target.html('');
-          var $b = null;
-          $b = Fb.c($target, '.location', 'starts (' + data[0].length + ')').$;
-          $b.on('click', function(ev) {
-            $('.loc').remove();
-            Nu.each(data[0], function(en) { displayEntry(en, $entry, '.loc'); });
-          });
-          $b = Fb.c($target, '.location', 'ends (' + data[1].length + ')').$;
-          $b.on('click', function(ev) {
-            $('.loc').remove();
-            Nu.each(data[1], function(en) { displayEntry(en, $entry, '.loc'); });
-          });
-          $b = Fb.c($target, '.location', 'contains (' + data[2].length + ')').$;
-          $b.on('click', function(ev) {
-            $('.loc').remove();
-            Nu.each(data[2], function(en) { displayEntry(en, $entry, '.loc'); });
+          Nu.each([ 'starts', 'ends', 'contains' ], function(t, i) {
+            Fb.c(
+              $target, '.location', t + ' (' + data[i].length + ')'
+            ).$.on('click', function(ev) {
+              $('.loc').remove();
+              Nu.each(data[i], function(en) {
+                displayEntry(en, $entry, '.loc.' + t);
+              });
+            });
           });
         }
       });
@@ -104,10 +98,7 @@
 
       var $e = e.$;
 
-      if (klass) {
-        if (klass.slice(0, 1) === '.') klass = klass.slice(1);
-        $e.addClass(klass);
-      }
+      if (klass) Nu.each(klass.split('.'), function(k) { $e.addClass(k) });
 
       var isKanji = entry.id && entry.id.match(/^U/);
 
