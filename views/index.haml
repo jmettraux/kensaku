@@ -64,15 +64,18 @@
           var $b = null;
           $b = Fb.c($target, '.location', 'starts (' + data[0].length + ')').$;
           $b.on('click', function(ev) {
-            Nu.each(data[0], function(en) { displayEntry(en, $entry); });
+            $('.loc').remove();
+            Nu.each(data[0], function(en) { displayEntry(en, $entry, '.loc'); });
           });
           $b = Fb.c($target, '.location', 'ends (' + data[1].length + ')').$;
           $b.on('click', function(ev) {
-            Nu.each(data[1], function(en) { displayEntry(en, $entry); });
+            $('.loc').remove();
+            Nu.each(data[1], function(en) { displayEntry(en, $entry, '.loc'); });
           });
           $b = Fb.c($target, '.location', 'contains (' + data[2].length + ')').$;
           $b.on('click', function(ev) {
-            Nu.each(data[2], function(en) { displayEntry(en, $entry); });
+            $('.loc').remove();
+            Nu.each(data[2], function(en) { displayEntry(en, $entry, '.loc'); });
           });
         }
       });
@@ -92,7 +95,7 @@
       });
     }
 
-    var displayEntry = function(entry, i) {
+    var displayEntry = function(entry, i, klass) {
 
       var e;
 
@@ -100,6 +103,11 @@
       else e = Fb.c($results, '#' + entry.id + '.entry');
 
       var $e = e.$;
+
+      if (klass) {
+        if (klass.slice(0, 1) === '.') klass = klass.slice(1);
+        $e.addClass(klass);
+      }
 
       var isKanji = entry.id && entry.id.match(/^U/);
 
