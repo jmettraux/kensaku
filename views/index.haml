@@ -65,7 +65,9 @@
             Fb.c(
               $target, '.location', t + ' (' + data[i].length + ')'
             ).$.on('click', function(ev) {
+              var toggled = ($('.loc.' + t)[0]);
               $('.loc').remove();
+              if (toggled) return;
               Nu.each(data[i], function(en) {
                 displayEntry(en, $entry, '.loc.' + t);
               });
