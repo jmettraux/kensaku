@@ -51,6 +51,8 @@
 
     var clickLocations = function(ev, entry) {
 
+      ev.stopPropagation();
+
       var $target = $(ev.target).closest('.locations');
       $target.off();
 
@@ -65,6 +67,7 @@
             Fb.c(
               $target, '.location', t + ' (' + data[i].length + ')'
             ).$.on('click', function(ev) {
+              ev.stopPropagation();
               var toggled = ($('.loc.' + t)[0]);
               $('.loc').remove();
               if (toggled) return;
@@ -111,6 +114,7 @@
 
       var jiClick =
         function(ev) {
+          ev.stopPropagation();
           var $target = $(ev.target);
           var code = Ks.charToCode($target.text());
           var id = '#' + code;
@@ -156,9 +160,6 @@
       $e.on('click', function(ev) {
 
         var $target = $(ev.target);
-        if ($target.hasClass('location') || $target.hasClass('locations')) {
-          return;
-        }
 
         var pev = previousEvent || { timeStamp: 0, screenX: 0, screenY: 0 };
 
@@ -308,7 +309,6 @@
 
     $query.on('keyup', function(ev) {
 
-      //$rads.empty();
       $clear.removeClass('error');
 
       var q = $.trim($query.val()).toLowerCase();
