@@ -12,5 +12,5 @@
 
 [ ] discard Entry@children (they seem not used... I forgot...)
 
-[ ] toggle off on sta/end/con (remove displayed elements)
+[o] toggle off on sta/end/con (remove displayed elements)
 
