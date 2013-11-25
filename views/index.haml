@@ -262,10 +262,8 @@
 
       try {
 
-        radicals[''] = [ 17 ];
-        radicals[' '] = [ 17 ];
-        radicals['  '] = [ 17 ];
-          // shadow slots
+        //radicals['  '] = [ 17 ];
+          // shadow slots, not necessary anymore
 
         var col = 0;
         var $row;
@@ -273,14 +271,17 @@
         Nu.each(radicals, function(k, v) {
           if (col === 4) col = 0;
           if (col === 0) $row = Fb.c($rads, '.row', '').$;
-          var sk = k;
-          var ck = Ks.charToCode(k, 'rU');
-          var co = Fb.c($row, '.col.rad', { id: ck }, sk);
           if (v[0] > strokes) {
             strokes = v[0];
-            Fb.c(co, '.stroke-count', '' + (v[0] % 10));
+            Fb.c($row, '.col.stroke-count').c('span', strokes.toString());
+            col = col + 1;
+            if (col === 4) { col = 0; $row = Fb.c($rads, '.row', '').$; }
+              // let's dry it some time
           }
-          if (v[1]) $(co).on('click', clickRadical);
+          var sk = k;
+          var ck = Ks.charToCode(k, 'rU');
+          var $co = Fb.c($row, '.col.rad', { id: ck }, sk).$;
+          if (v[1]) $co.on('click', clickRadical);
           col = col + 1;
         });
 

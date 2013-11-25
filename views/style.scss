@@ -109,10 +109,16 @@ span.menu {
 }
 .stroke-count {
   -webkit-writing-mode: horizontal-bt;
-  font-size: 50%;
-  position: relative;
-  top: 1.4em;
-  left: 0.25em;
+  //font-size: 50%;
+  //position: relative;
+  //top: 1.4em;
+  //left: 0.25em;
+  width: 1em;
+  text-align: right;
+  span {
+    font-size: 50%;
+    opacity: 0.4;
+  }
 }
 
 #results {
