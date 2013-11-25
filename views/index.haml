@@ -114,23 +114,23 @@
       var ki = e.div('.ki');
       var ka = e.div('.ka');
 
-      var jiClick =
-        function(ev) {
-          ev.stopPropagation();
-          var $target = $(ev.target);
-          var code = Ks.charToCode($target.text());
-          var id = '#' + code;
-          if ($(id).length > 0) {
-            window.location.href = id;
-            return;
+      var jiClick = function(ev) {
+        ev.stopPropagation();
+        $rads.hide();
+        var $target = $(ev.target);
+        var code = Ks.charToCode($target.text());
+        var id = '#' + code;
+        if ($(id).length > 0) {
+          window.location.href = id;
+          return;
+        }
+        $.ajax({
+          url: '/ji/' + code,
+          success: function(data) {
+            displayEntry(data, $target.closest('.entry'));
           }
-          $.ajax({
-            url: '/ji/' + code,
-            success: function(data) {
-              displayEntry(data, $target.closest('.entry'));
-            }
-          });
-        };
+        });
+      };
 
       Nu.each(entry.ki, function(kanji) {
         var kan = ki.div('.kanji');
