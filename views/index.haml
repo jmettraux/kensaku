@@ -116,8 +116,14 @@
 
       var jiClick = function(ev) {
         ev.stopPropagation();
-        $rads.hide();
         var $target = $(ev.target);
+        if ($rads.is(':visible')) {
+          $rads.hide();
+          $target.attr('data-ks-hid-klookup', '1');
+        }
+        else if ($target.attr('data-ks-hid-klookup')) {
+          $rads.show();
+        }
         var code = Ks.charToCode($target.text());
         var id = '#' + code;
         if ($(id).length > 0) {
